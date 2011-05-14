@@ -1,0 +1,82 @@
+\documentclass[10pt,twoside,a4paper]{book}
+\usepackage{czech}
+\usepackage[latin2]{inputenc}
+\usepackage{graphics}
+\usepackage{float}            % floating boxes (i.e. images)
+\usepackage{a4wide}           % wider page layout
+\usepackage{fancyhdr}         % control header & footer
+\usepackage{sectsty}          % section header customization
+\usepackage[numbers]{natbib}  % enhanced citation references
+\usepackage[bookmarks=true,unicode]{hyperref}
+
+\sectionfont{\sffamily}
+\chapterfont{\sffamily}
+
+\fancypagestyle{plain}{
+	\fancyhf{}
+	\renewcommand{\headrulewidth}{0pt}
+	\fancyfoot[CE,CO]{\thepage}
+}
+
+% No headers on empty pages before new chapter - http://www.markschenk.com/tensegrity/latexexplanation.html
+\makeatletter
+\def\cleardoublepage{\clearpage\if@twoside \ifodd\c@page\else
+    \hbox{}
+    \thispagestyle{plain}
+    \newpage
+    \if@twocolumn\hbox{}\newpage\fi\fi\fi}
+\makeatother \clearpage{\pagestyle{plain}\cleardoublepage}
+
+\begin{document}
+\pagenumbering{roman}
+
+\begin{titlepage}
+\begin{center}
+\vspace*{\stretch{2}}
+{\Huge\sffamily\bfseries Podpora vývoje rozšíøení PHP CMS}
+
+\vspace*{2em}
+{\Large\sffamily\bfseries Martin Schmied}
+
+\vspace*{\stretch{0.7}}
+\resizebox{0.4\textwidth}{!}{\includegraphics{resource/vse-logo.png}}
+
+\vspace*{\stretch{3}}
+\end{center}
+\end{titlepage}
+
+\tableofcontents 
+
+\cleardoublepage
+\pagenumbering{arabic}
+
+\chapter*{Úvod} \addcontentsline{toc}{section}{Úvod}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent magna mi, malesuada a consequat eu, rutrum eget arcu. Nulla ac erat sem, at pellentesque odio. In porttitor posuere nisl et laoreet. In hac habitasse platea dictumst. Cras ut purus vitae sapien iaculis volutpat. Aenean pharetra facilisis sem eget vestibulum. Nulla facilisi. Nulla sodales turpis et libero eleifend quis dictum sem semper. Vivamus in urna imperdiet nulla congue consequat nec quis diam. Morbi congue est eget sapien pharetra et malesuada orci sollicitudin. Nam nec tellus nec nisi dignissim pretium eu in risus. Nam tempor sodales scelerisque. Duis id enim nibh, sit amet euismod lorem. Curabitur arcu mi, tincidunt convallis sodales eu, sagittis a mauris. Sed cursus quam vel orci tincidunt in ornare nisi rutrum. 
+
+\chapter{První kapitola}
+ Quisque non magna nulla. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam vestibulum rutrum hendrerit. Fusce malesuada nibh vel dui tincidunt ac pulvinar eros commodo. Proin cursus ante a est feugiat a molestie ante adipiscing. Mauris a erat quis sapien condimentum malesuada ac eget velit. Aliquam erat volutpat. Suspendisse ac magna quis leo dignissim scelerisque tincidunt eu erat. Phasellus nunc elit, egestas eget dignissim at, laoreet vitae ligula. Pellentesque gravida, eros bibendum placerat adipiscing, lectus ligula tincidunt tortor, quis lobortis lorem dolor suscipit justo. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin id leo nisl, et posuere dui. Quisque diam dolor, eleifend ac porta ac, mattis ut felis. Cras est quam, volutpat bibendum condimentum ut, faucibus quis ipsum. Morbi odio mi, mattis ac placerat sed, condimentum et justo. Aliquam ac est et est blandit gravida. Donec dictum nibh id neque varius imperdiet. Praesent eleifend consequat ligula, a eleifend ipsum hendrerit in. Mauris dapibus aliquam mi, id accumsan odio fringilla lacinia. Mauris lacinia, est sed faucibus accumsan, felis mauris ullamcorper sapien, aliquet imperdiet nibh mauris ut odio. 
+
+\section{První podkapitola}
+ Aenean tincidunt malesuada suscipit. Fusce tristique diam non arcu facilisis faucibus. Maecenas consectetur porta nunc, sit amet egestas libero tincidunt et. Vestibulum lectus libero, tristique quis pulvinar in, vestibulum vel dui. Phasellus et lectus vitae dolor ultrices faucibus. Quisque sit amet quam ultricies velit interdum pretium at sit amet tellus. Suspendisse potenti. Donec diam lorem, imperdiet volutpat tempus vel, porttitor in dolor. Donec sit amet tempor dui. Vivamus id augue tortor. Vivamus placerat rhoncus felis, in condimentum est mattis non. Maecenas eget lectus a elit sagittis elementum ac sit amet tellus. Phasellus quis arcu a tortor interdum placerat. Integer dui sem, fermentum sit amet eleifend laoreet, vestibulum sit amet turpis. Aliquam ac lectus eros, convallis mollis nisi. Sed ante dolor, vehicula scelerisque tincidunt vel, auctor sit amet nisi. 
+
+ Aliquam erat volutpat. Donec at turpis vel elit dignissim tristique non eu augue. Nullam volutpat, turpis ut hendrerit dictum, est erat condimentum nulla, sit amet ullamcorper diam justo et magna. Aliquam orci nisl, porta id lacinia ut, eleifend quis nibh. In rutrum pulvinar felis, sit amet aliquam risus cursus at. Nam eros lectus, fringilla ac porttitor sed, egestas et enim. Integer at turpis sem, in egestas neque. Maecenas nec velit et dolor sodales mollis. Maecenas facilisis velit sit amet turpis imperdiet vitae laoreet tellus luctus. In hac habitasse platea dictumst. Donec fermentum lectus ut tellus laoreet dictum. Vestibulum vulputate tempus justo. 
+
+ Maecenas condimentum nulla a quam facilisis posuere. Nulla at nisi eu lorem tincidunt pellentesque. Aliquam sed nibh orci. Curabitur malesuada sem sit amet quam volutpat interdum. Ut posuere dictum purus, ac consectetur velit euismod ut. Proin porta, ipsum id tristique rutrum, neque tortor eleifend enim, quis rutrum quam turpis id mauris. Morbi mattis, risus vitae iaculis sagittis, enim metus suscipit orci, et sollicitudin ligula lorem et diam. Fusce ac elit tortor. Praesent laoreet pretium lorem eget pulvinar. Suspendisse at lacus quis erat venenatis imperdiet. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Morbi varius accumsan magna, pellentesque pulvinar leo commodo ac. 
+
+ Nulla sed tincidunt risus. Ut consequat sem eget magna vestibulum convallis eu sed urna. Donec ac iaculis justo. Donec eget elit odio. In ut augue sit amet nunc pharetra eleifend. Phasellus ac neque non sapien tincidunt sagittis. Morbi vehicula nisl nec sapien lobortis auctor. Suspendisse potenti. Phasellus et tincidunt sapien. Proin sollicitudin faucibus erat. Pellentesque in augue lorem. Phasellus feugiat augue at urna mattis rhoncus. Sed viverra lacus in quam gravida adipiscing. Nullam mauris mi, malesuada ut vulputate in, sagittis eget orci. Nam cursus auctor tincidunt. Vivamus eget magna nec purus tristique molestie. 
+
+ Proin a arcu velit, id sodales tortor. Etiam rutrum rutrum semper. Integer scelerisque massa non mauris fermentum interdum. Maecenas ac tellus mollis elit varius suscipit. Aliquam imperdiet augue ac justo sagittis eu ullamcorper lectus bibendum. Aliquam scelerisque arcu tempus leo mollis egestas. Aenean in leo tellus, sed ullamcorper massa. Morbi facilisis massa vitae diam fringilla a vehicula ligula volutpat. Pellentesque eget metus vitae metus mollis gravida sit amet eget turpis. Donec elit justo, varius vitae vestibulum et, malesuada at enim. 
+
+ Cras tristique semper elit, eu viverra libero sodales in. Nam fringilla tempor nunc, sit amet ultricies tellus fringilla ac. Quisque imperdiet malesuada lacus, hendrerit consectetur ipsum tempor et. Curabitur aliquet, ligula sit amet pharetra lobortis, metus nulla rhoncus justo, eu hendrerit odio metus convallis augue. Nulla facilisi. Morbi risus tellus, ornare at blandit nec, ultrices sed sem. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Proin placerat laoreet vehicula. Maecenas ultrices odio quis massa eleifend eleifend. Nulla cursus nisl sit amet dolor mollis malesuada. Curabitur pulvinar ullamcorper feugiat. Curabitur dictum sollicitudin placerat. Cras eget dolor ipsum. Sed ligula dui, posuere vitae cursus ut, bibendum non elit. Mauris porttitor pharetra augue at accumsan. In consequat sagittis fringilla. In hac habitasse platea dictumst. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Sed sed urna est. 
+
+ Vivamus eget cursus libero. In hendrerit ligula et erat interdum vehicula. Suspendisse porttitor mauris non libero iaculis id auctor massa malesuada. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Mauris cursus mattis leo vitae auctor. Nunc et leo et ipsum fermentum pulvinar venenatis nec orci. Aliquam scelerisque scelerisque ultricies. Duis malesuada augue vitae lorem ullamcorper elementum. Sed vitae ligula nulla, vel gravida sem. Suspendisse quis condimentum dui. Nullam a ante at magna blandit aliquam. Ut laoreet dui ac nisl interdum quis volutpat odio dictum. Fusce elementum sagittis lorem sit amet tempor. Duis euismod aliquet nunc eu porttitor. Vivamus quis diam a felis venenatis molestie. Nunc eu urna velit, quis ornare eros. Curabitur sed augue velit, sit amet fermentum eros. Nam libero urna, rhoncus nec aliquam vel, elementum id libero. Ut eget est nec diam malesuada sodales. Nulla facilisi. 
+
+ Etiam malesuada velit nec sem tristique eleifend. Donec ac ligula auctor nunc molestie consequat id at tortor. Donec rutrum nulla non nisi dignissim a cursus nulla euismod. Praesent tortor augue, aliquam et volutpat eu, lacinia sed metus. Nam a semper lorem. Nam commodo, ligula vel vulputate sollicitudin, leo tortor feugiat tellus, eu rutrum lorem purus eu lacus. Sed adipiscing vestibulum turpis, vitae elementum nulla lobortis sit amet. Integer dictum blandit ante, sed egestas lorem bibendum at. Nunc congue lobortis justo, quis facilisis purus feugiat nec. Sed sem tellus, pellentesque id tempus nec, ultricies vitae urna. Sed imperdiet fringilla convallis. Praesent eleifend posuere porttitor. In hac habitasse platea dictumst.
+
+\section{Druhá podkapitola}
+
+Vivamus eget cursus libero. In hendrerit ligula et erat interdum vehicula. Suspendisse porttitor mauris non libero iaculis id auctor massa malesuada. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Mauris cursus mattis leo vitae auctor. Nunc et leo et ipsum fermentum pulvinar venenatis nec orci. Aliquam scelerisque scelerisque ultricies. Duis malesuada augue vitae lorem ullamcorper elementum. Sed vitae ligula nulla, vel gravida sem. Suspendisse quis condimentum dui. Nullam a ante at magna blandit aliquam. Ut laoreet dui ac nisl interdum quis volutpat odio dictum. Fusce elementum sagittis lorem sit amet tempor. Duis euismod aliquet nunc eu porttitor. Vivamus quis diam a felis venenatis molestie. Nunc eu urna velit, quis ornare eros. Curabitur sed augue velit, sit amet fermentum eros. Nam libero urna, rhoncus nec aliquam vel, elementum id libero. Ut eget est nec diam malesuada sodales. Nulla facilisi. 
+  
+Etiam malesuada velit nec sem tristique eleifend. Donec ac ligula auctor nunc molestie consequat id at tortor. Donec rutrum nulla non nisi dignissim a cursus nulla euismod. Praesent tortor augue, aliquam et volutpat eu, lacinia sed metus. Nam a semper lorem. Nam commodo, ligula vel vulputate sollicitudin, leo tortor feugiat tellus, eu rutrum lorem purus eu lacus. Sed adipiscing vestibulum turpis, vitae elementum nulla lobortis sit amet. Integer dictum blandit ante, sed egestas lorem bibendum at. Nunc congue lobortis justo, quis facilisis purus feugiat nec. Sed sem tellus, pellentesque id tempus nec, ultricies vitae urna. Sed imperdiet fringilla convallis. Praesent eleifend posuere porttitor. In hac habitasse platea dictumst.
+
+\end{document}
