@@ -7,8 +7,11 @@
 \usepackage{fancyhdr}         % control header & footer
 \usepackage{sectsty}          % section header customization
 \usepackage[numbers]{natbib}  % enhanced citation references
-\usepackage[top=3.6cm,bottom=3.5cm,inner=3.5cm,outer=2.6cm]{geometry}
+\usepackage{pgfplots}         % plots
+\usepackage[top=3.6cm,bottom=3.5cm,inner=3.5cm,outer=2.6cm]{geometry} %custom page layout
 \usepackage[bookmarks=true,unicode]{hyperref}
+
+\usetikzlibrary{patterns}
 
 \sectionfont{\sffamily}
 \chapterfont{\sffamily}
@@ -30,6 +33,8 @@
     \newpage
     \if@twocolumn\hbox{}\newpage\fi\fi\fi}
 \makeatother \clearpage{\pagestyle{plain}\cleardoublepage}
+
+\setlength{\skip\footins}{1.5em}
 
 \begin{document}
 \pagenumbering{roman}
@@ -66,9 +71,54 @@ Tato práce se zamìøuje na nedílnou souèást zdravé komunity kolem open source CMS
 \chapter{Vývoj rozšíøení pro PHP CMS}
 Primární cílovou skupinou open source CMS nebyly v dobì jejich vzniku velké korporace a jejich webové portály. Mnoho jich zaèínalo na pøesnì opaèném konci spektra -- u osobních stránek a zápisníkù. Tady slavily velké úspìchy a nìkteré systémy tuto orientaci dodnes neopustily. Není proto pøekvapením, že nejrozšíøenìjší open source CMS jsou postaveny nad platformou PHP, která se již dlouhou dobu vyznaèuje širokou nabídkou hostingových služeb, z nichž velké množství je nabízeno zdarma èi za symbolický poplatek. Kombinace PHP hostingu zdarma a open source CMS je tak pro mnoho lidí nejsnazší a nejlevnìjší cestou k vlastní webové prezentaci.
 
-% PHP je dynamický, slabì typovaný skriptovací jazyk. Možnosti pøímé podpory vývojáøe v vývojovém prostøedí (IDE -- \emph{Integrated Development Environment}) jsou tak u nìj ve srovnání se staticky typovanými jazyky znaènì omezené. Pro vývoj v PHP je k dispozici množství rùzných IDE. Existují open source projekty v rámci Eclipse i Netbeans\footnote{Netbeans je open source IDE primárnì zamìøené na vývoj v jazyce Java. Eclipse je také známé pøedevším jako IDE pro Javu, ale v tomto pøípadì lze dnes mluvit pøedevším o platformì pro tvorbu nástrojù pro vývojáøe s velmi benevolentní licencí umožòující snadné využití pro komerèní úèely.} a množství komerèních IDE -- napøíklad Zend Studio, jež je též postaveno nad platformou Eclipse. Pøesto stále velké množství PHP vývojáøù využívá ke své práci pouze textový editor s podporou zvýrazòování syntaxe. Dobrovolnì se tak vzdávají pokroèilých funkcí IDE, jako je automatické doplòování kódu, integrace s debuggerem a další.
+Obrázky \ref{fig:cmsdownloads} a \ref{fig:cmsinstallations} ukazují porovnání popularity open source CMS podle poètu stažení a podle poètu instalací zjištìných v prùzkumu tržního zastoupení tìchto systémù provedeného agenturou water\&stone v roce 2010 \citep[viz][]{shreves10}. I když se poøadí jednotlivých systémù liší dle zvoleného kritéria popularity, je zøejmé, že velká vìtšina tržního podílu pøipadá PHP CMS. Dále si mùžeme všimnout tøí nejpopulárnìjších open source CMS, jimiž jsou WordPress, Joomla a Drupal. Právì u nich budeme zkoumat možnosti rozšiøování a doporuèené postupy pro vývojáøe rozšíøení. Nejprve se ale podívejme na nástroje pro podporu vývoje na platformì PHP, pro kterou jsou všechny tyto systémy urèeny.
 
-Podle prùzkumu tržního zastoupení open source CMS provedeného v roce 2010 agenturou water\&stone \citep[viz][]{shreves10} jsou nejrozšíøenìjší systémy WordPress, Joomla a Drupal.\footnote{Poøadí jednotlivých systémù se liší podle zvoleného kritéria (poèet stažení nebo poèet instalací zjištìných v prùzkumu).} Všechny uvedené systémy jsou založeny na PHP, mají kolem sebe soustøedìnu aktivní komunitu a je pro nì k dispozici velké množství rùzných komerèních i nekomerèních rozšíøení.
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    symbolic y coords={Umbraco [PHP],Alfresco [Java],eZ Publish [PHP],Typo3 [PHP],Liferay [Java],CMSMadeSimple [PHP],DotNetNuke [ASP.NET],Drupal [PHP],Joomla [PHP],WordPress [PHP]},
+    scaled x ticks=false,
+    ytick=data]
+    \addplot[xbar,draw=blue,pattern=horizontal lines light blue] coordinates {
+        (983625,WordPress [PHP])
+        (113836,Joomla [PHP])
+        (33671,Drupal [PHP])
+        (13000,DotNetNuke [ASP.NET])
+        (9948,CMSMadeSimple [PHP])
+        (9435,Liferay [Java])
+        (7461,Typo3 [PHP])
+        (7031,eZ Publish [PHP])
+        (7000,Alfresco [Java])
+        (5420,Umbraco [PHP])
+    };
+\end{axis}
+\end{tikzpicture}
+\caption{Prùmìrný poèet stažení za jeden týden bìhem roku 2010. \citep{shreves10}} \label{fig:cmsdownloads}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    symbolic y coords={Concrete5 [PHP],Alfresco [Java],CMSMadeSimple [PHP],Tiky [PHP],Typo3 [PHP],Liferay [Java],DotNetNuke [ASP.NET],Drupal [PHP],WordPress [PHP],Joomla [PHP]},
+    ytick=data]
+    \addplot[xbar,draw=blue,pattern=horizontal lines light blue] coordinates {
+        (1297,Joomla [PHP])
+        (1012,WordPress [PHP])
+        (575,Drupal [PHP])
+        (402,DotNetNuke [ASP.NET])
+        (154,Liferay [Java])
+        (122,Typo3 [PHP])
+        (82,Tiky [PHP])
+        (72,CMSMadeSimple [PHP])
+        (70,Alfresco [Java])
+        (62,Concrete5 [PHP])
+    };
+\end{axis}
+\end{tikzpicture}
+\caption{Poèet instalací zjištìných v anketì agentury water\&stone.	 \citep{shreves10}} \label{fig:cmsinstallations}
+\end{figure}
 
 \section{Nástroje pro podporu vývoje v PHP}
 PHP patøí mezi nejpopulárnìjší programovací jazyky. V kvìtnu 2011 se jazyk PHP na žebøíèku TIOBE Programming Community Index\footnote{TIOBE Programming Community Index mìøí popularitu programovacích jazykù na základì poètu výsledkù vrácených vyhledávacími službami pro dotazy na jednotlivé jazyky.} umístil na páté pozici za Javou, C, C++ a C\# \citep{tiobe}. Dle tìchto výsledkù se tak jedná o nejpopulárnìjší dynamicky typovaný jazyk vùbec. Právì dynamický skriptovací charakter PHP má zásadní vliv na volbu nástrojù pro podporu vývoje, jak bude ukázáno dále.
@@ -119,8 +169,6 @@ Výèet nástrojù využitelných pøi vývoji PHP aplikací jistì není úplný. Z dosud ne
 
 \section{Rozšíøení PHP CMS}
 Podívejme se podrobnìji na možnosti tvorby rozšiøování funkènost nejrozšíøenìjších open source CMS. Bude nás zajímat, co odlišuje rozšíøení od bìžné sady PHP skriptù (tj. jakým zpùsobem je integrováno s CMS). Pøedevším se však zamìøíme na doporuèené postupy práce pøi vývoji jednoduchého rozšíøení a budeme se snažit identifikovat místa, ve kterých lze tuto práci zefektivnit pøidáním specifické podpory pro tento typ vývoje do IDE. Samozøejmì nás také bude zajímat souèasná nabídka speciálních nástrojù pro vývoj rozšíøení CMS.
-
-\subsection{title}
 
 %TODO: pracovní název kapitoly
 \chapter{Podpora vývojáøe rozšíøení CMS Joomla!}
