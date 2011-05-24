@@ -8,6 +8,7 @@
 \usepackage{sectsty}          % section header customization
 \usepackage[numbers]{natbib}  % enhanced citation references
 \usepackage{pgfplots}         % plots
+\usepackage{listings}         % code listings
 \usepackage[top=3.6cm,bottom=3.5cm,inner=3.5cm,outer=2.6cm]{geometry} %custom page layout
 \usepackage[bookmarks=true,unicode]{hyperref}
 
@@ -35,6 +36,8 @@
 \makeatother \clearpage{\pagestyle{plain}\cleardoublepage}
 
 \setlength{\skip\footins}{1.5em}
+
+\renewcommand*{\lstlistingname}{Výpis}
 
 \begin{document}
 \pagenumbering{roman}
@@ -168,7 +171,18 @@ Pro rozsáhlejší èi dlouhodobìjší projekty je vhodné využít integraèního serveru,
 Výèet nástrojù využitelných pøi vývoji PHP aplikací jistì není úplný. Z dosud nezmínìných mùžeme vybrat napøíklad nástroje pro generování dokumentace (napø. phpDocumentor), nástroje pro statickou analýzu kódu (napø. PHP zásuvný modul pro Sonar integrující více takových nástrojù) èi issue tracking systém (napø. Redmine). V závislosti na typu vyvíjené aplikace bychom pak tento seznam mohli dále rozšiøovat.
 
 \section{Rozšíøení PHP CMS}
-Podívejme se podrobnìji na možnosti tvorby rozšiøování funkènost nejrozšíøenìjších open source CMS. Bude nás zajímat, co odlišuje rozšíøení od bìžné sady PHP skriptù (tj. jakým zpùsobem je integrováno s CMS). Pøedevším se však zamìøíme na doporuèené postupy práce pøi vývoji jednoduchého rozšíøení a budeme se snažit identifikovat místa, ve kterých lze tuto práci zefektivnit pøidáním specifické podpory pro tento typ vývoje do IDE. Samozøejmì nás také bude zajímat souèasná nabídka speciálních nástrojù pro vývoj rozšíøení CMS.
+Podívejme se podrobnìji na možnosti tvorby rozšiøování funkènost nejrozšíøenìjších open source CMS. Bude nás zajímat jaké typy rozšíøení jsou pro daný systém k dispozici a jak se od sebe jednotlivé typy rozšíøení liší. V pøípadì funkèních rozšíøení prozkoumáme principy jejich integrace v CMS (tj. jakým zpùsobem mohou modifikovat existující funkcionalitu nebo pøidávat novou) a zpùsob zachycení metadat. Nakonec se podíváme na proces instalace rozšíøení a podobu instalaèních balíèkù.
+
+\subsection{WordPress}
+Primárním zamìøením systému WordPress jsou osobní webové prezentace a zápisníky (tzv. blogy). Samotné jádro systému pokrývá mnohem ménì funkcionality než v pøípadì Drupalu èi Joomly\footnote{WordPress vystaèí v základní instalaci s pouhými 12 tabulkami v databázi oproti 33 v pøípadì Joomly a 73 u Drupalu. I když mezi poètem tabulek a složitostí CMS zdaleka nemusí platit pøímá úmìra, rozdíl je zde na první pohled patrný.}. Témìø 15\,000 dostupných zásuvných modulù však umožòuje vytvoøit z WordPressu plnohodnotný CMS.
+
+Do WordPressu lze instalovat dva typy rozšíøení -- témata (Themes) a zásuvné moduly (\mbox{Plugins}). Témata slouží k pøizpùsobení vzhledu systému. Z hlediska této práce nás budou více zajímat funkèní rozšíøení, tedy zásuvné moduly. Jejich nabídku je možné procházet pøímo z administraèní èásti systému a vybraná rozšíøení rovnou instalovat. Instalaci lze provést též manuálnì stažením archivu s rozšíøením a následným rozbalením do pøedem dané složky. Po instalaci je zásuvný modul zobrazen v pøíslušném seznamu v administraci, ale zatím není aktivován. Teprve aktivací se modul stává funkèním a mùže upravovat èi rozšiøovat funkce CMS.
+
+Integrace zásuvného modulu se zbytkem systému probíhá registrací funkcí, které mají být zavolány v urèitém okamžiku (napø. aktivace nebo v prùbìhu vykreslování rùzných èástí stránky). Modul tak mùže reagovat na nìkteré události nebo pozmìòovat koneènou podobu vykreslované stránky. Alternativní zpùsob integrace je skrze poskytování speciálních znaèek, které je možné využít v šablonách stránek a jejichž zpracování je poté na modul delegováno. \citep{wp-pluginhowto}
+
+Samotný zásuvný modul mùže být tvoøen pouze jediným souborem. V pøípadì modulù obsahujících více souborù je vždy jeden PHP skript hlavním souborem modulu. Ten je spuštìn po instalaci a má možnost zaregistrovat poèáteèní posluchaèe na události (typický modul se zaregistruje alespoò na upozornìní pøi aktivaci a deaktivaci). Hlavní soubor modulu musí obsahovat hlavièku, ve které jsou formou strukturovaného blokového komentáøe uvedena metadata modulu. Podporovaná metadata a formu jejich zápisu je vidìt v šablonì hlavièky zásuvného modulu na výpisu \ref{lst:wp-plugin-header}. \citep{wp-pluginhowto}
+
+\lstinputlisting[language=PHP, caption={Šablona hlavièky zásuvného modulu systému WordPress. \citep{wp-pluginhowto}}, label=lst:wp-plugin-header]{listings/wp-plugin-header.php}
 
 %TODO: pracovní název kapitoly
 \chapter{Podpora vývojáøe rozšíøení CMS Joomla!}
@@ -189,6 +203,8 @@ TODO: nìco na závìr...
 \bibitem{phpfrmwpoll} SIRONI, Giorgio. \emph{The PHP frameworks poll results} [online]. 2011 [cit. 2011-05-22]. Dostupné z WWW: \textless\url{http://css.dzone.com/articles/php-frameworks-poll-results}\textgreater.
 
 \bibitem{xdebugvim} Box.net, Inc. \emph{How to Debug PHP with Vim and XDebug on Linux} [online]. 2007 [cit. 2011-05-22]. Dostupné z WWW: \textless\url{http://tech.blog.box.net/2007/06/20/how-to-debug-php-with-vim-and-xdebug-on-linux/}\textgreater.
+
+\bibitem{wp-pluginhowto} Wordpress.org. \emph{Writing a Plugin} [online]. 2011 [cit. 2011-05-24]. Dostupné z WWW: \textless\url{http://codex.wordpress.org/Writing_a_Plugin}\textgreater.
 
 %\bibitem{pdt-home} The Eclipse Foundation. \emph{PHP Development Tools Project} [online]. 2011 [cit. 2001-05-15]. Dostupné z WWW: \textless\url{http://eclipse.org/pdt/}\textgreater.
 
