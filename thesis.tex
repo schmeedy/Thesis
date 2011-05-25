@@ -171,7 +171,7 @@ Pro rozsáhlejší èi dlouhodobìjší projekty je vhodné využít integraèního serveru,
 Výèet nástrojù využitelných pøi vývoji PHP aplikací jistì není úplný. Z dosud nezmínìných mùžeme vybrat napøíklad nástroje pro generování dokumentace (napø. phpDocumentor), nástroje pro statickou analýzu kódu (napø. PHP zásuvný modul pro Sonar integrující více takových nástrojù) èi issue tracking systém (napø. Redmine). V závislosti na typu vyvíjené aplikace bychom pak tento seznam mohli dále rozšiøovat.
 
 \section{Rozšíøení PHP CMS}
-Podívejme se podrobnìji na možnosti tvorby rozšiøování funkènost nejrozšíøenìjších open source CMS. Bude nás zajímat jaké typy rozšíøení jsou pro daný systém k dispozici a jak se od sebe jednotlivé typy rozšíøení liší. V pøípadì funkèních rozšíøení prozkoumáme principy jejich integrace v CMS (tj. jakým zpùsobem mohou modifikovat existující funkcionalitu nebo pøidávat novou) a zpùsob zachycení metadat. Nakonec se podíváme na proces instalace rozšíøení a podobu instalaèních balíèkù.
+Podívejme se podrobnìji na možnosti tvorby rozšiøování funkènost nejrozšíøenìjších open source CMS. Bude nás zajímat, jaké typy rozšíøení jsou pro daný systém k dispozici a jak se od sebe jednotlivé typy rozšíøení liší. V pøípadì funkèních rozšíøení prozkoumáme principy jejich integrace v CMS (tj. jakým zpùsobem mohou modifikovat existující funkcionalitu nebo pøidávat novou) a zpùsob zachycení metadat. Rozebereme si také proces instalace rozšíøení a podobu instalaèních balíèkù.
 
 \subsection{WordPress}
 Primárním zamìøením systému WordPress jsou osobní webové prezentace a zápisníky (tzv. blogy). Samotné jádro systému pokrývá mnohem ménì funkcionality než v pøípadì Drupalu èi Joomly\footnote{WordPress vystaèí v základní instalaci s pouhými 12 tabulkami v databázi oproti 33 v pøípadì Joomly a 73 u Drupalu. I když mezi poètem tabulek a složitostí CMS zdaleka nemusí platit pøímá úmìra, rozdíl je zde na první pohled patrný.}. Témìø 15\,000 dostupných zásuvných modulù však umožòuje vytvoøit z WordPressu plnohodnotný CMS.
@@ -182,13 +182,24 @@ Integrace zásuvného modulu se zbytkem systému probíhá registrací funkcí, které m
 
 Samotný zásuvný modul mùže být tvoøen pouze jediným souborem. V pøípadì modulù obsahujících více souborù je vždy jeden PHP skript hlavním souborem modulu. Ten je spuštìn po instalaci a má možnost zaregistrovat poèáteèní posluchaèe na události (typický modul se zaregistruje alespoò na upozornìní pøi aktivaci a deaktivaci). Hlavní soubor modulu musí obsahovat hlavièku, ve které jsou formou strukturovaného blokového komentáøe uvedena metadata modulu. Podporovaná metadata a formu jejich zápisu je vidìt v šablonì hlavièky zásuvného modulu na výpisu \ref{lst:wp-plugin-header}. \citep{wp-pluginhowto}
 
-\lstinputlisting[language=PHP, caption={Šablona hlavièky zásuvného modulu systému WordPress. \citep{wp-pluginhowto}}, label=lst:wp-plugin-header]{listings/wp-plugin-header.php}
+\lstinputlisting[language=PHP, caption={Šablona hlavièky zásuvného modulu systému WordPress. \citep{wp-pluginhowto}}, label=lst:wp-plugin-header]{listings/cms-extension-metadata/wp-plugin-header.php}
+
+\subsection{Drupal}
+Drupal má podobnì jako WordPress dva hlavní typy rozšíøení -- moduly (Modules) a témata (Themes). Analogicky jako v pøípadì WordPressu slouží témata k pøizpùsobení vzhledu a moduly pøedstavují funkèní rozšíøení. Pro instalaci nového modulu staèí stáhnout archiv s distribucí a rozbalit ho do speciální složky v adresáøovém stromu systému. Modul je pak zobrazený v pøíslušném seznamu v administraèní èásti systému, kde je ho stejnì jako v systému WordPress potøeba aktivovat.
+
+První verze Drupalu vznikaly v dobì pøed vydáním PHP5, kdy objektový model jazyka trpìl mnoha problémy. To je jeden z dùvodù, proè vìtšina základních API nevyužívá objektovì orientovaných konstruktù \citep{drupal-oop}. Princip integrace modulù se zbytkem systému je principiálnì shodný s WordPressem. Namísto aktivní registrace na události se však spoléhá na jmennou konvenci -- rùzné èásti systému èi jiné moduly definují body pro rozšíøení s názvem zaèínajícím \uv{hook\_} (npø. \verb|hook_install|) a modul pak mùže toto rozšíøení implementovat vytvoøením funkce stejného názvu, ve kterém však \uv{hook} nahradí jménem modulu. Tyto rozšiøující funkce by mìly být deklarovány v rámci hlavního PHP skriptu souboru nazvaného \verb|jméno_modulu.module|. \citep{drupal-moduledev}
+
+Instalaèní, aktualizaèní\footnote{Drupal obsahuje pøímou podporu pro snadnou migraci databázových schémat mezi rùznými verzemi modulu.} a odinstalaèní funkce, pokud jsou potøeba, se nedávají do hlavního skriptu modulu, ale do speciálního souboru \verb|jméno_modulu.install|. Každý modul ještì navíc obsahuje soubor se základními metadaty ve formátu INI file s názvem \verb|jméno_modulu.info|. Vedle základních metadat jako je jméno a popis modulu musí být také specifikována podporovaná verze Drupalu. Od verze 7 je navíc nutné vypsat seznam všech souborù obsahujících definice tøíd (tento seznam je internì cachován a pøi jeho zmìnì bìhem vývoje je nutné vymazat cache). Dále je možné specifikovat závislost na jiných modulech, bez jejichž pøítomnosti daný modul nelze aktivovat. Ukázka obsahu \verb|info| souboru je na výpisu \ref{lst:drupal-module-info}. \citep{drupal-moduledev}
+
+\lstinputlisting[caption={Pøíklad obsahu souboru s metadaty modulu pro CMS Drupal.}, label=lst:drupal-module-info]{listings/cms-extension-metadata/drupal-module-info.ini}
+
+\subsection{Joomla}
 
 %TODO: pracovní název kapitoly
-\chapter{Podpora vývojáøe rozšíøení CMS Joomla!}
+\chapter{Optimalizace práce vývojáøe rozšíøení CMS Joomla}
 
 %TODO: pracovní název kapitoly
-\chapter{Implementace nástrojù pro podporu vývoje rozšíøení CMS Joomla! v Eclipse IDE}
+\chapter{Podpora vývoje rozšíøení CMS Joomla v Eclipse IDE}
 
 \cleardoublepage
 \chapter*{Závìr} \addcontentsline{toc}{chapter}{Závìr}
@@ -205,6 +216,10 @@ TODO: nìco na závìr...
 \bibitem{xdebugvim} Box.net, Inc. \emph{How to Debug PHP with Vim and XDebug on Linux} [online]. 2007 [cit. 2011-05-22]. Dostupné z WWW: \textless\url{http://tech.blog.box.net/2007/06/20/how-to-debug-php-with-vim-and-xdebug-on-linux/}\textgreater.
 
 \bibitem{wp-pluginhowto} Wordpress.org. \emph{Writing a Plugin} [online]. 2011 [cit. 2011-05-24]. Dostupné z WWW: \textless\url{http://codex.wordpress.org/Writing_a_Plugin}\textgreater.
+
+\bibitem{drupal-oop} Drupal.org. \emph{Drupal programming from an object-oriented perspective} [online]. 2011 [cit. 2011-05-25]. Dostupné z WWW: \textless\url{http://drupal.org/node/547518}\textgreater.
+
+\bibitem{drupal-moduledev} Drupal.org. \emph{Module developer's guide} [online]. 2010 [cit. 2011-05-25]. Dostupné z WWW: \textless\url{http://drupal.org/developing/modules}\textgreater.
 
 %\bibitem{pdt-home} The Eclipse Foundation. \emph{PHP Development Tools Project} [online]. 2011 [cit. 2001-05-15]. Dostupné z WWW: \textless\url{http://eclipse.org/pdt/}\textgreater.
 
