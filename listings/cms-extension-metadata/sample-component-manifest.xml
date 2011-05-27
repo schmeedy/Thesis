@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install type="component" version="1.5.0">
+  <name>Hello World</name>
+  <creationDate>2007-01-17</creationDate>
+  <author>John Doe</author>
+  <copyright>Copyright Info</copyright>
+  <license>License Info with link</license>
+  <version>1.0.1</version>
+  <description>Description of the component ...</description>
+   <installfile>install.helloworld.php</installfile>
+  <uninstallfile>uninstall.helloworld.php</uninstallfile>
+  <install>
+    <sql>
+      <file driver="mysql" charset="utf8">
+        install.mysql.utf8.sql
+      </file>
+      <file driver="mysql">install.mysql.nonutf8.sql</file>
+    </sql>
+  </install>
+  <uninstall>
+    <sql>
+      <file driver="mysql" charset="utf8">
+        uninstall.mysql.utf8.sql
+      </file>
+      <file driver="mysql">uninstall.mysql.nonutf8.sql</file>
+    </sql>
+  </uninstall>
+  <files>
+    <filename>index.html</filename>
+    <filename>helloworld.php</filename>
+    <folder>views</folder>
+  </files>
+  <languages>
+    <language tag="en-GB">en-GB.com_test.ini</language>
+    <language tag="de-DE">de-DE.com_test.ini</language>
+  </languages>
+  <media destination="com_helloworld">
+    <filename>image.png</filename>
+  </media>
+  <administration>
+     <menu img="components/com_helloworld/images/menu.png">
+      Hello World
+    </menu>
+    <submenu>
+      <menu link="option=com_helloworld&amp;controller=config">
+        Configuration
+      </menu>
+    </submenu>
+    <files folder="admin">
+      <filename>index.html</filename>
+      <filename>admin.helloworld.php</filename>
+    </files>
+    <languages folder="admin">
+      <language tag="en-GB">en-GB.com_helloworld.ini</language>
+      <language tag="de-DE">de-DE.com_helloworld.ini</language>
+    </languages>
+    <media folder="admin" destination="com_helloworld">
+      <filename>admin-flash.swf</filename>
+    </media>
+  </administration>
+</install>

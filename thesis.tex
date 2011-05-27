@@ -2,6 +2,7 @@
 \usepackage{czech}
 \usepackage[latin2]{inputenc}
 \usepackage{graphics}
+\usepackage{array}
 \usepackage{float}            % floating boxes (i.e. images)
 \usepackage{a4wide}           % wider page layout
 \usepackage{fancyhdr}         % control header & footer
@@ -36,6 +37,10 @@
 \makeatother \clearpage{\pagestyle{plain}\cleardoublepage}
 
 \setlength{\skip\footins}{1.5em}
+
+% caption spacing adjustment
+\setlength{\abovecaptionskip}{6pt}
+\setlength{\belowcaptionskip}{6pt}
 
 \renewcommand*{\lstlistingname}{Vıpis}
 
@@ -194,6 +199,60 @@ Instalaèní, aktualizaèní\footnote{Drupal obsahuje pøímou podporu pro snadnou mig
 \lstinputlisting[caption={Pøíklad obsahu souboru s metadaty modulu pro CMS Drupal.}, label=lst:drupal-module-info]{listings/cms-extension-metadata/drupal-module-info.ini}
 
 \subsection{Joomla}
+Systém rozšíøení CMS Joomla se od vıše zmínìnıch konkurenèních CMS v mnohém liší. Z pohledu vıvojáøe je zajímavı objektovì orientovanı design jádra systému. Vìtšina API vyuívanıch pøi tvorbì rozšíøení vyuívá objektovıch rysù jazyka. Zøejmì nejvìtší odlišností postihující jak uivatele, tak vıvojáøe, je existence více specializovanıch typù funkèních rozšíøení. Podívejme se teï na jejich struènı pøehled \citep{mastering-joomla}:
+
+\begin{description}
+	\item[Komponenty (Components)] Slouí pro vykreslování hlavní obsahové èásti stránky. Komponenta je tak nejdùleitìjším a z pohledu uivatele \uv{nejmocnìjším} typem rozšíøením. API pro komponenty je implementací návrhového vzoru Model--View--Controller (MVC) umoòujícímu napøíklad znovupouitelnost velké èásti kódu pøi zmìnì prezentaèní technologie. Nìkteré komponenty tak nabízejí alternativní formáty vıstupu (napø. HTML a PDF). Jiné dokonce vùbec vıstup v HTML nepodporují a vytváøejí komunikaèní uzel pro pøipojení externích aplikací\footnote{Nejèastìjším pøíkladem komunikace jiné aplikace s CMS je zøejmì asynchronní volání z JavaScriptu umístìného na webové stránce vykreslené Joomlou. Serverová èást obsluhující klientské poadavky pak bude s velkou pravdìpodobností komponenta.}. Kadá komponenta je navíc rozdìlena na veøejnou èást pro pouití ve veøejnì dostupné èásti webu a na administraèní èást umoòující zmìnu konfigurace komponenty.
+
+	\item[Moduly (Modules)] Pouívají se k vykreslování menších èástí obsahu webové stránky, které se zobrazují po stranách hlavního obsahu, pøípadnì nad èi pod ním. Pøíkladem modulu je seznam naposledy publikovanıch èlánkù èi navigaèní menu. Èasté je vyuití modulù jako doplòkù komponent.
+
+	\item[Pluginy (Plugins)]\footnote{Èeskı vıraz \uv{zásuvnı modul} je v kontextu rozšíøení systému Joomla ponìkud nepraktickı kvùli zámìnì s \uv{moduly}. Proto bude tento druh rozšíøení oznaèován jako plugin.} Slouí k úpravì chování jádra systému a nìkterıch rozšíøení. Mohou toti reagovat na rùzné události. Zatímco v pøípadì WordPressu a Drupalu je tato monost dopøána všem funkèním rozšíøením (pøipomeòme si, e u nich existuje jen jedinı druh funkèních rozšíøení), v pøípadì Joomly je vısadou právì pluginù. Bìné je také vyuití pluginù jako knihoven PHP skriptù.
+\end{description}
+
+\noindent V pøípadì Joomly nelze provést instalaci rozšíøení jednoduchım rozbalením do správného adresáøe uvnitø CMS. Místo toho jsou rozšíøení distribuovány ve formì speciálních instalaèních balíèkù, které je potøeba pøes instalaèní stránku v administraèní èásti systému nahrát na server. Bìhem instalace jsou soubory z instalaèního balíèku rozbaleny do adresáøového stromu CMS a to èasto na více rùznıch míst. Napøíklad u komponenty jsou soubory z administraèní èásti po instalaci oddìlené od zbytku komponenty. Koneèné umístìní jednotlivıch souborù v adresáøovém stromu Joomly tak záleí na druhu rozšíøení (pøièem mezi rùznımi druhy není konzistentní) a také na typu daného souboru. Z uivatelského pohledu mùe bıt toto rozdìlování souborù jednoho rozšíøení nepodstatné, ale z pohledu vıvojáøe se jedná o zásadní komplikaci, jak bude diskutováno dále. Nainstalovaná rozšíøení lze v administrátorském rozhraní povolovat a zakazovat (pøesnı postup se liší podle druhu rozšíøení).
+
+Je jasné, e k zabezpeèení takto \uv{chytrého} procesu instalace je potøeba více metadat, ne s jakımi si vystaèí WordPress nebo Drupal. Joomla proto u rozšíøení vyaduje XML manifest, ve kterém jsou v nìkolika skupinách vypsány všechny soubory (nebo celé sloky) je rozšíøení tvoøí. Kromì toho mùe manifest obsahovat i odkazy na instalaèní a odinstalaèní PHP skripty, SQL skripty pro vytvoøení a odstranìní databázovıch tabulek, definici poloek administrátorského menu èi specifikaci konfiguraèních parametrù. Nìkteré aspekty rozšíøení, které je v pøípadì WordPressu a Drupalu nutné øešit programovì, tak lze v Joomle vyøešit deklarativnì. Pøíklad XML manifestu komponenty je uveden na vıpisu \ref{lst:sample-component-manifest}.
+
+\lstinputlisting[caption={Pøíklad manifestu komponenty urèené pro CMS Joomla ve verzi 1.5 \citep{sample-component-manifest}}, label=lst:sample-component-manifest]{listings/cms-extension-metadata/sample-component-manifest.xml}
+
+\subsection{Shrnutí a porovnání}
+Tøi nejrozšíøenìjší open source CMS systémy mají mnoho spoleèného, ale také se v mnohém liší. Pøi porovnání dle zkoumanıch kritérií, jejich shrnutí nabízí tabulka \ref{tab:cms-comparison}, zjistíme velkou podobnost mezi systémy WordPress a Drupal. Systém Joomla je od této dvojice naopak znaènì odlišnı.
+
+\begin{table}[h]
+	\centering
+	\caption{Srovnání rùznıch aspektù rozšíøení PHP CMS}
+	\label{tab:cms-comparison}
+	\begin{tabular}{m{3.9cm} c c c}
+		\hline
+		& \bfseries{WordPress} & \bfseries{Drupal} & \bfseries{Joomla} \\ \hline
+		objektovì orientovaná základní API & ne & ne & ano \\ \hline
+		funkèní rozšíøení & univerzální & univerzální & 3 druhy \\ \hline
+		formát metadat & PHP komentáø & INI soubor & XML \\ \hline
+		povinné vypsání souborù rozšíøení v metadatech & ne & obsahují-li definice tøíd & všechny \\ \hline
+		instalace rozšíøení & rozbalením & rozbalením & z administraèního UI \\ \hline
+		umístìní souborù rozšíøení po instalaci & 1 adresáø & 1 adresáø & rùzné adresáøe \\ \hline
+	\end{tabular}
+\end{table}
+
+\noindent Zkusme se nyní zamyslet, jakı vliv mají nìkteré odlišnosti na sloitost vıvoje rozšíøení pro CMS disponující danou vlastností:
+
+\begin{description}
+	\item[objektovì orientovaná API] Nelze jednoznaènì øíci, jakım zpùsobem pøispívají objektová API k produktivitì vıvojáøe. Jistì se najde nemálo vıvojáøù, pro které je OOP (objektovì orientované programování) spíše pøekákou. Navíc pøi praktickém vıvoji jde spíše o kvalitu daného API a vestavìnıch mechanismù a otázka vyuití OOP je pak spíše technická. Tato práce se rozhodnì nezabıvá detailní kvalitativním analızou API pro vıvoj rozšíøení a tak se na vìc podívejme z technického pohledu. 
+	
+	OOP umoòuje lepší organizaci kódu, nebo pøináší další organizaèní jednotky. Tyto další organizaèní jednotky pak umoòují omezovat viditelnost tìch èástí kódu, které mají pouze lokální vıznam. Lepší organizace kódu a omezení viditelnosti (scoping) kódu pak umoòuje tvorbu lepších nástrojù. Je pravdìpodobné, e pouitím IDE dosáhneme vìtšího nárùstu produktivity právì u aplikací vyuívajících OOP. Automatické doplòování kódu bude v tomto pøípadì pøesnìjší, nebo z nabídek mohou bıt vyfiltrovány nabídky, které v daném kontextu nejsou dostupné.
+	
+	\item[více druhù funkèních rozšíøení] Opìt nelze s jistotou øíci, zda je z hlediska návrhu dobré èi špatné vyadovat striktní oddìlení jednotlivıch funkcí do rùznıch typù rozšíøení. Snadno ovšem nalezneme argumenty proti takovému oddìlení. Jasnou nevıhodou je vynucení tvorby více instalaèních jednotek i v pøípadì, e bez vzájemné souèinnosti nebudou funkèní. Jako pøíklad ze systému Joomla uveïme kombinaci pluginu pouitého jako knihovna a komponenty, je tento plugin (knihovnu) vyuívá. Komponenta bez uvedeného pluginu nikdy nebude fungovat a plugin sám o sobì nedìlá vùbec nic uiteèného. Pøesto je administrátor webu provozujícího systém Joomla nainstalovat tyto rozšíøení samostatnì\footnote{Ve verzi 1.6 je novì moné vytvoøit ze souvisejících rozšíøení jeden instalaèní balíèek -- archiv obsahující jednotlivé archivy s rozšíøeními a speciální instalaèní manifest.}. 
+	
+	Jeden univerzální druh funkèního rozšíøení je v tomto ohledu flexibilnìjší. Pokud je ádoucí oddìlit urèitou funkcionalitu do samostatného instalaèního balíèku (napø. protoe má doplòkovou funkci a ne všichni ji chtìjí vyuívat), mùeme toho jednoduše dosáhnout vytvoøením dvou samostatnıch rozšíøení. Pokud naopak oddìlování funkcionality nemá v daném kontextu vıznam, mùeme stále dosáhnout oddìlení jednotlivıch logickıch funkcí (tedy napø. po vzoru Joomly separace vykreslování hlavního obsahu, doplòkového obsahu a reakce na události) pomocí vnitøního strukturování jednoho rozšíøení.
+	
+	\item[povinné vypsání souborù v metadatech] Pokud se musí kadı soubor (nebo sloka) zaregistrovat v metadatech rozšíøení, je to jistì ztíení vıvoje a vytváøí to prostor pro vznik zbyteènıch chyb. Hlavní otázkou je, proè je tato registrace vyadována. V pøípadì Drupalu je to kvùli automatickému naèítání souborù s tøídami pøi jejich prvním pouití -- v tomto pøípadì tedy na jednu stranu dochází ke komplikaci (nesmím zapomenout zaregistrovat soubor obsahující definici tøídy), která ale na druhou stranu pøináší usnadnìní (pøi pouití tøíd se nemusím zabıvat naèítáním skriptù). Systém Joomla vyaduje registraci souborù kvùli instalaci. Dùvodem je, e adresáøová struktura instalaèního balíèku není po instalaci zachována. Tím se dostáváme k dalšímu bodu.
+	
+	\item[oddìlení souborù nainstalovaného rozšíøení] Tato zvláštnost systému Joomla má velmi neblahı vliv na vıvoj rozšíøení. Pøi vıvoji se toti neustále opakuje fáze úprav kódu na následného testování. Pro otestování rozšíøení PHP CMS musí bıt toto rozšíøení nainstalováno, co mimo jiné znamená pøítomnost souborù rozšíøení na správném místì v adresáøovém stromu CMS. Tyto soubory musí samozøejmì obsahovat poslední zmìny, které chceme testovat. Z toho vyplıvá, e pøi vıvoji buï editujeme pøímo soubory v adresáøovém stromu CMS, nebo editujeme soubory v oddìleném adresáøi, se kterım jsou soubory v CMS synchronizovány. V pøípadì WordPressu a Drupalu jsou obì monosti schùdné -- editace pøímo v CMS je jednoduché korektní øešení a pokud chceme z nìjakého dùvodu mít editované soubory mimo CMS, mùeme napøíklad vytvoøit v CMS symbolickı odkaz na sloku, ve které jsou obsaeny.
+	
+	V pøípadì systému Joomla je situace o dost sloitìjší, jeliko napøíklad soubory tıkající se jedné komponenty mohou bıt v adresáøovém stromu CMS nejménì na šesti místech v závislosti na jejich druhu. Pokud budeme soubory editovat pøímo v CMS, budeme èelit problému pøi pouití systému pro správu verzí. Pro jeho efektivní pouití je nutné mít soubory tvoøící funkèní celek v jednom spoleèném adresáøi. I v pøípadì pouití IDE budeme èelit problémùm -- z pohledu IDE by opìt jeden funkèní celek mìl odpovídat jednomu projektu. Navíc pøi vytváøení distribuce bude nutné soubory z CMS extrahovat, vytvoøit instalaèní balíèek a jeho manifest. Pokud budeme editované soubory rozšíøení dret v oddìleném adresáøi v rozloení odpovídajícím instalaènímu balíèku, musíme se postarat o synchronizaci tìchto souborù se soubory nainstalovaného rozšíøení ve stromu CMS. V tomto pøípadì máme øadu moností od reinstalace rozšíøení pøed kadım testováním (velmi nevhodné kvùli dlouhé dobì od zmìny k otestování) pøes vytvoøením a spouštìním skriptu, kterı se postará o zkopírování souborù (o nìco rychlejší) po udrování sady symbolickıch odkazù.
+\end{description}
+
+\section{Doporuèené postupy vıvoje rozšíøení PHP CMS}
 
 %TODO: pracovní název kapitoly
 \chapter{Optimalizace práce vıvojáøe rozšíøení CMS Joomla}
@@ -220,6 +279,10 @@ TODO: nìco na závìr...
 \bibitem{drupal-oop} Drupal.org. \emph{Drupal programming from an object-oriented perspective} [online]. 2011 [cit. 2011-05-25]. Dostupné z WWW: \textless\url{http://drupal.org/node/547518}\textgreater.
 
 \bibitem{drupal-moduledev} Drupal.org. \emph{Module developer's guide} [online]. 2010 [cit. 2011-05-25]. Dostupné z WWW: \textless\url{http://drupal.org/developing/modules}\textgreater.
+
+\bibitem{mastering-joomla} KENNARD, James. \emph{Mastering Joomla! 1.5 : Extension and Framework Development}. Birmingham : Packt Publishing, 2007. 470 s. ISBN 978-1-847192-82-0.
+
+\bibitem{sample-component-manifest} Joomla.org. \emph{Components: xml installfile} [online]. 2011 [cit. 2011-05-25]. Dostupné z WWW: \textless\url{http://docs.joomla.org/Components:xml_installfile}\textgreater.
 
 %\bibitem{pdt-home} The Eclipse Foundation. \emph{PHP Development Tools Project} [online]. 2011 [cit. 2001-05-15]. Dostupné z WWW: \textless\url{http://eclipse.org/pdt/}\textgreater.
 
