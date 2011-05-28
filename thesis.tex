@@ -10,6 +10,7 @@
 \usepackage[numbers]{natbib}  % enhanced citation references
 \usepackage{pgfplots}         % plots
 \usepackage{listings}         % code listings
+\usepackage{eurosym}          % symbol of the now-infamous currency
 \usepackage[top=3.6cm,bottom=3.5cm,inner=3.5cm,outer=2.6cm]{geometry} %custom page layout
 \usepackage[bookmarks=true,unicode]{hyperref}
 
@@ -223,7 +224,6 @@ Tøi nejrozšíøenìjší open source CMS systémy mají mnoho spoleèného, ale také se v
 	\caption{Srovnání rùzných aspektù rozšíøení PHP CMS}
 	\label{tab:cms-comparison}
 	\begin{tabular}{m{3.9cm} c c c}
-		\hline
 		& \bfseries{WordPress} & \bfseries{Drupal} & \bfseries{Joomla} \\ \hline
 		objektovì orientovaná základní API & ne & ne & ano \\ \hline
 		funkèní rozšíøení & univerzální & univerzální & 3 druhy \\ \hline
@@ -252,7 +252,19 @@ Tøi nejrozšíøenìjší open source CMS systémy mají mnoho spoleèného, ale také se v
 	V pøípadì systému Joomla je situace o dost složitìjší, jelikož napøíklad soubory týkající se jedné komponenty mohou být v adresáøovém stromu CMS nejménì na šesti místech v závislosti na jejich druhu. Pokud budeme soubory editovat pøímo v CMS, budeme èelit problému pøi použití systému pro správu verzí. Pro jeho efektivní použití je nutné mít soubory tvoøící funkèní celek v jednom spoleèném adresáøi. I v pøípadì použití IDE budeme èelit problémùm -- z pohledu IDE by opìt jeden funkèní celek mìl odpovídat jednomu projektu. Navíc pøi vytváøení distribuce bude nutné soubory z CMS extrahovat, vytvoøit instalaèní balíèek a jeho manifest. Pokud budeme editované soubory rozšíøení držet v oddìleném adresáøi v rozložení odpovídajícím instalaènímu balíèku, musíme se postarat o synchronizaci tìchto souborù se soubory nainstalovaného rozšíøení ve stromu CMS. V tomto pøípadì máme øadu možností od reinstalace rozšíøení pøed každým testováním (velmi nevhodné kvùli dlouhé dobì od zmìny k otestování) pøes vytvoøením a spouštìním skriptu, který se postará o zkopírování souborù (o nìco rychlejší) po udržování sady symbolických odkazù.
 \end{description}
 
-\section{Doporuèené postupy vývoje rozšíøení PHP CMS}
+\section{Existující nástroje a doporuèené postupy vývoje}
+\subsection{Komerèní nástroje}
+Podívejme se na dva zástupce komerèních nástrojù nabízející pøímou podporu vývoje rozšíøení CMS. Prvním z nich je Adobe Dreamweaver -- aplikace nacházející se svým zamìøením nìkde na rozhraní komplexních IDE pro vývoj webových aplikací a nástrojù pro vizuální návrh webových stránek. Ve verzi CS5 byla do Dreamweaveru pøidána podpora pro vývoj CMS umožòující automatické nalezení souborù souvisejících s vykreslovanou stránkou pomocí sledování prùbìhu skriptu na vývojovém serveru. Z vykreslené stránky je pak napøíklad možná pøímá navigace k definicím CSS stylùm, jejichž zmìnu umí Dreamweaver promítnout i bez dalšího spouštìní skriptù na serveru. Schopnost vizualizace a propojení výstupu se zdrojovými soubory jdou daleko za možnosti open source PHP IDE. Nástroj je však primárnì orientován na podporu vývoje vizuálních témat, nikoliv funkèních rozšíøení. Pro mnoho potenciálních uživatelù (zejména tvùrcù nekomerèních rozšíøení) je pak odrazující pomìrnì vysoká cena\footnote{V kvìtnu 2011 je cena Adobe Dreamweaver CS5.5 v Adobe Download Store pro region východní Evropy (\url{https://store2.adobe.com/cfusion/store/index.cfm?\&store=OLS-EU\#}) \EUR{449} bez DPH.}. \citep{dreamweaver-cms}
+
+Druhým komerèním nástrojem, na který se blíže podíváme, je codeLobster PHP Edition, jež mùžeme bez problémù klasifikovat jako IDE. K dispozici jsou dvì varianty tohoto IDE, kde základní edice je k dispozici zdarma. Edice Professional pak navíc obsahuje podporu pro vybrané CMS systémy, aplikaèní frameworky a SQL. Podpora CMS WordPress, Drupal a Joomla se skládá pøedevším z následujících funkcí \citep{codelobster}:
+\begin{itemize}
+\item instalace a základní konfigurace CMS z IDE,
+\item automatické doplòování kódu,
+\item navigace k referenèní dokumentaci pøímo z kódu,
+\item vizuální editor HTML šablon.
+\end{itemize}
+
+\noindent Zastavme se na chvíli u automatického doplòování. Urèité typy doplòování jsou využitelné univerzálnì v jakékoliv PHP aplikaci -- napø. seznam statických metod vybrané tøídy nebo seznam argumentù metody. Ve skriptovacím jazyku jako je PHP je ale bìžné napøíklad využívání funkèních argumentù pøedstavujících mapování mezi klíèi a hodnotami (v PHP asociativní pole). I když je seznam použitelných klíèù (a nìkdy hodnot) u dané mapy èasto pevnì daný, specifikovaný v referenèní dokumentaci, z pohledu IDE není tato informace žádným zpùsobem obecnì odvoditelná. Pokud tedy budeme chtít vylepšit systém automatického doplòování o tyto pøípady, musíme tak uèinit formou rozšíøení specifického pro daný systém. codeLobster takovou podporu nabízí pro systémy WordPress a Drupal. U systému Joomla spoléhá na generickou podporu doplòování objektovì orientovaného orientovaného PHP kódu.
 
 %TODO: pracovní název kapitoly
 \chapter{Optimalizace práce vývojáøe rozšíøení CMS Joomla}
@@ -283,6 +295,10 @@ TODO: nìco na závìr...
 \bibitem{mastering-joomla} KENNARD, James. \emph{Mastering Joomla! 1.5 : Extension and Framework Development}. Birmingham : Packt Publishing, 2007. 470 s. ISBN 978-1-847192-82-0.
 
 \bibitem{sample-component-manifest} Joomla.org. \emph{Components: xml installfile} [online]. 2011 [cit. 2011-05-25]. Dostupné z WWW: \textless\url{http://docs.joomla.org/Components:xml_installfile}\textgreater.
+
+\bibitem{dreamweaver-cms} lynda.com. \emph{Working with CMS frameworks in Dreamweaver CS5 New Features from lynda.com} [online]. San Bruno (California) : YouTube, LLC, 11.04.2010 [cit. 2011-05-26]. Dostupné z WWW: \textless\url{http://www.youtube.com/watch?v=AflQ_N3Kl1Q&feature=player_embedded}\textgreater.
+
+\bibitem{codelobster} CodeLobster Software. \emph{CodeLobster PHP Edition} [online]. 2011 [cit. 2011-05-26]. Dostupné z WWW: \textless\url{http://www.codelobster.com/}\textgreater.
 
 %\bibitem{pdt-home} The Eclipse Foundation. \emph{PHP Development Tools Project} [online]. 2011 [cit. 2001-05-15]. Dostupné z WWW: \textless\url{http://eclipse.org/pdt/}\textgreater.
 
