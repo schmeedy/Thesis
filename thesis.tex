@@ -168,7 +168,7 @@ Další nedostateènì rozšíøenou praktikou v PHP komunitì je tvorba jednotkovıch te
 
 Jako doplnìk jednotkovıch testù (nebo do jisté míry jejich alternativu) lze vyuít nástrojù pro tvorbu webovıch testovacích scénáøù. Tyto nástroje umoòují skrze zásuvnı modul v prohlíeèi nahrát urèité chování uivatele na stránce a vytvoøit sadu testù na oèekávanı vıstup zpracování uivatelskıch akcí. Nahrané chování pak nástroj umí automaticky pøehrát v prohlíeèi vèetnì spuštìní testù správnosti vıstupu. Tyto nástroje jsou nezávislé na konkrétní technologii pouité na serveru\footnote{I kdy nìkteré nabízejí integraci s knihovnami pro psaní testù ve vybranıch jazycích. Scénáø lze pak pouštìt jako automatickı integraèní test.}. Ze zástupcù lze zmínit napøíklad Selenium èi Windmill.
 
-\subsection{Nástroj pro automatizaci sestavování}
+\subsection{Nástroj pro automatizaci sestavování} \label{subsect:phing}
 Nástroje pro automatizaci sestavování (tzv. \uv{build automation tools}) jsou témìø nezbytnou pomùckou pøi vıvoji jakékoliv sloitìjší aplikace v kompilovaném jazyku. Pomohou ovšem i s automatizací pøípravy distribuèního balíèku PHP aplikace, zejména pokud je souèástí sestavení pøíprava testovacího prostøedí a spouštìní automatickıch testù. Pøímo pro PHP je k dispozici nástroj Phing vycházející z Antu, nástroje primárnì urèeného pro automatizaci sestavení Java aplikací.
 
 Pro rozsáhlejší èi dlouhodobìjší projekty je vhodné vyuít integraèního serveru, kterı mùe iniciovat sestavení distribuce (spolu se spuštìním testù) v pravidelnıch èasovıch intervalech (nebo napøíklad po commitu do VCS systému), emailem upozoròovat na selhávající testy a podobnì. Velmi flexibilním open source integraèním serverem vyuitelnım i pro vıvoj PHP aplikací je napøíklad Jenkins.
@@ -216,7 +216,7 @@ Je jasné, e k zabezpeèení takto \uv{chytrého} procesu instalace je potøeba více
 
 \lstinputlisting[caption={Pøíklad manifestu komponenty urèené pro CMS Joomla ve verzi 1.5 \citep{sample-component-manifest}}, label=lst:sample-component-manifest]{listings/cms-extension-metadata/sample-component-manifest.xml}
 
-\subsection{Shrnutí a porovnání}
+\subsection{Shrnutí a porovnání} \label{subsect:cms-summary-and-comparison}
 Tøi nejrozšíøenìjší open source CMS systémy mají mnoho spoleèného, ale také se v mnohém liší. Pøi porovnání dle zkoumanıch kritérií, jejich shrnutí nabízí tabulka \ref{tab:cms-comparison}, zjistíme velkou podobnost mezi systémy WordPress a Drupal. Systém Joomla je od této dvojice naopak znaènì odlišnı.
 
 \begin{table}[h]
@@ -299,7 +299,37 @@ Jak však mùeme hodnotit kvalitu metodiky vıvoje SW a jaké jsou její znaky? Dále
 IDE nejsou pøíliš flexibilními nástroji -- ba právì naopak. Monosti jejich uivatelského pøizpùsobení pro práci, pro kterou nebyly navreny, jsou vìtšinou minimální. Na druhou stranu však umoòují øadu standardních úloh øešit velmi efektivnì. Umoòují toti vtìlit metodiku do nástroje. Je-li tato vtìlená metodika pro danı úkol vhodná a zároveò je-li v IDE vhodnım zpùsobem integrována, pøináší koncovım uivatelùm velké úspory èasu, kterı by jinak museli trávit vymıšlením správnıch postupù a konfigurací flexibilnìjších nástrojù.
 
 \section{Doporuèené postupy práce}
-Základním pøedpokladem pro vıvoj rozšíøení CMS Joomla je pøipravené testovací prostøedí sestávající typicky z webového serveru Apache s PHP interpretrem a relaèní databáze MySQL. Testovací prostøedí je tedy totoné jako v pøípadì vıvoje \uv{bìnıch} aplikací na platformì PHP a dá se pøedpokládat, e vìtšina potenciálních Joomla vıvojáøù má ji takové prostøedí k dispozici. 
+Základním pøedpokladem pro vıvoj rozšíøení CMS Joomla je pøipravené testovací prostøedí sestávající typicky z webového serveru Apache s PHP interpretrem a relaèní databáze MySQL. Testovací prostøedí je tedy totoné jako v pøípadì vıvoje \uv{bìnıch} aplikací na platformì PHP a dá se pøedpokládat, e vìtšina potenciálních Joomla vıvojáøù má ji takové prostøedí k dispozici. Dalším nutnım pøedpokladem je funkèní instalace systému Joomla pro testování vyvíjeného rozšíøení nasazená na testovacím prostøedí. Konkrétní nástroje a postupy práce uplatòované ve vıvojovém cyklu se však budou u rùznıch vıvojáøù znaènì rozcházet. Pokusme se nyní analyzovat dvì konkrétní metodiky práce doporuèené dvìma zdroji, které bychom mohli v oblasti vıvoje rozšíøení systému Joomla oznaèit za autoritativní.
+
+\subsection{Sandbox rozšíøení}
+Tento postup je doporuèován v knize Matering Joomla! 1.5 \citep{mastering-joomla}. Pøed vıvojem samotného rozšíøení si vytvoøíme základní manifest komponenty (nebo jiného typu rozšíøení) obsahující pouze základní metadata (\uv{Component Sandbox}). V pøípadì komponenty by mezi metadaty mìl bıt napøíklad i název menu v administraèní èásti. Z metadat naopak vynecháme všechny informace vyadující dodateèné soubory (jako instalaèní a odinstalaèní skripty, vypsání souborù tvoøících rozšíøení a podobnì), protoe ty na zaèátku vıvoje ještì neexistují. Samotnı manifest rozšíøení pak zabalíme a nainstalujeme pøes správce rozšíøení Joomla. Pøi instalaci Joomla vytvoøí adresáøe pro rozšíøení na správnıch místech (adresáøe zùstanou v tuto chvíli prázdné) a zaregistruje dané rozšíøení ve své databázi. Vıvoj a testování pak probíhá vytvoøením a úpravou souborù rozšíøení v tìchto adresáøích pøímo v souborovém stromu CMS. Tato technika vyuívá faktu, e k úspìšné instalaci rozšíøení není zapotøebí nic ne samotnı manifest daného rozšíøení\footnote{V pøípadì modulu a pluginu je situace o nìco sloitìjší ne je tomu u komponenty. Kvùli pomìrnì nelogické struktuøe metadat u tìchto typù rozšíøení je u minimálního manifestu nutné uvést alespoò jeden PHP soubor. Jedná se však jen o menší komplikaci, nebo k manifestu staèí pøibalit prázdnı PHP skript.}.
+
+Hlavním nedostatkem této metodiky vıvoje je vıvoj pøímo v souborovém stromu CMS, jeho problémovost byla diskutována ji v oddíle \ref{subsect:cms-summary-and-comparison}. Uveïme nìkteré ze zøejmıch nevıhod tohoto pøístupu:
+
+\begin{itemize}
+	\item Logicky související soubory patøící k jednomu rozšíøení jsou v souborovém systému CMS na rùznıch místech. Rozloení souborù tak odpovídá pohledu CMS (soubory rùznıch typù mají rùzné umístìní), spíše ne pohledu vıvojáøe (všechny soubory patøí k jednomu rozšíøení, které právì vyvíjím).
+	
+	\item Rozloení souborù jednoho rozšíøení v nìkolika adresáøích CMS vede k problémùm pøi pouití systému pro správu verzí. Pro jeho efektivní vyuití musí bıt související soubory pøítomné ve spoleèném adresáøi -- v pøípadì Joomla komponenty je nejbliším spoleènım adresáøem hlavní adresáø CMS a pouití systému pro správu verzí na celé CMS namísto na konkrétní rozšíøení je pøinejmenším problematické.
+	
+	\item Další problém vzniká pøi pøípravì instalaèního balíèku rozšíøení, kdy je potøeba jednotlivé soubory posbírat z rùznıch umístìní v CMS, nakopírovat je do struktury odpovídající instalaènímu balíèku a vytvoøit èi upravit XML manifest rozšíøení. Pøi pøípravì nové verze instalaèního balíèku je potøeba tento proces zopakovat. Skriptováním nebo vyuitím speciálních nástrojù (napø. Phing, viz \ref{subsect:phing}) lze tento proces zautomatizovat, ale to vyaduje dodateèné znalosti a vynaloené úsilí.
+\end{itemize}
+
+\subsection{Synchronizace souborù v CMS pomocí nástroje Phing}
+Tento postup je zevrubnì popsán v on-line vıvojáøské dokumentaci CMS Joomla \citep{joomla-extensiondev}. Na rozdíl od techniky sandbox rozšíøení, která nepøedpokládala vyuití konkrétního editoru, IDE nebo jinıch nástrojù, je navíc zamìøen konkrétnì na vyuití Eclipse IDE a nástroje Phing.
+
+Soubory rozšíøení jsou dreny oddìlenì od CMS v rámci samostatného projektu v Eclipse IDE. Struktura projektu navíc mùe odpovídat struktuøe instalaèního balíèku rozšíøení. Nainstalování rozšíøení tak je moné skrz správce rozšíøení buï pøímo z adresáøe projektu, nebo z instalaèního balíèku vytvoøeného prostım zabalením vybranıch souborù projektu. A zde pøichází první uplatnìní pro nástroj k automatizaci sestavení -- Phing. V konfiguraci nástroje (XML soubor) vytvoøíme jednoduchı úkol (Phing task) pro pøípravu instalaèního balíèku, kterı vezme potøebné soubory a vytvoøí z nich archiv.
+
+Pro další práci po nainstalování je nezbytné aktualizovat soubory v souborovém stromu CMS, pokud dojde k jejich zmìnì v projektu. A zde pøichází druhı, zøejmì dùleitìjší úkol pro Phing. V jeho konfiguraci vytvoøíme další úkol, v rámci kterého budeme chtít kopírovat soubory z projektu do odpovídajících umístìní v souborovém stromu CMS. Pro efektivní práci je pak tøeba zajistit, e se danı úkol spustí pøi kadé zmìnì nìkterého ze souborù v projektu. V Eclipse IDE toho lze docílit pøípravou konfigurace pro spuštìní externího nástroje a zapojení jeho spuštìní pøi kadém automatickém sestavení (automatic build). Pak staèí mít pro danı projekt automatické sestavení zapnuté a Eclipse pøi kadé zmìnì souboru spustí Phing s danım úkolem.
+
+Tento pøístup netrpí ádnım z problémù popsanıch v pøípadì sandbox rozšíøení. Na druhou stranu bychom i zde nalezli prostor ke zlepšení, kterı lze zaplnit implementací specifické podpory pro vıvoj rozšíøení Joomly v Eclipse IDE:
+
+\begin{itemize}
+	\item Prvním zøejmım problémem je nároènost pøípravy vıvojového prostøedí \citep[viz][]{joomla-extensiondev}.
+	
+	\item Samotná konfigurace Phingu v sobì skrıvá problém v podobì duplikace metadat. Cílové umístìní souboru v souborovém stromu CMS Joomla je dáno druhem a názvem rozšíøení a typem souboru. Všechny tyto informace jsou ji obsaeny v XML manifestu rozšíøení. Pøi zmìnì nìkterého z parametrù manifestu majícího vliv na cílové umístìní souboru je pak nutné upravit i konfiguraci pro Phing. Zbyteènì tak vzniká další prostor pro chybu.
+	
+	\item Proces synchronizace souborù je také pomìrnì neefektivní. Pøi kadé zmìnì jakéhokoli souboru v projektu je spuštìn externí proces, kterı nejdøíve musí naèíst konfiguraèní soubor a pak provést synchronizaci všech souborù rozšíøení, namísto pouze tìch zmìnìnıch\footnote{Phing mùe pøi synchronizaci ignorovat soubory, je se podle èasového razítka nezmìnily. Kontrolu data poslední zmìny však musí provést u všech, nebo se k nìmu ji nedostane informace o tom, které soubory v projektu se zmìnily.}. Tato neefektivita mùe a nemusí bıt problém v závislosti na velikosti projektu a parametrech hardwaru.
+\end{itemize}
 
 \chapter{Implementace}
 \section{Platforma Eclipse}
@@ -380,6 +410,8 @@ TODO: nìco na závìr...
 \bibitem{jcode} JoomlaCode. \emph{J!Code Project} [online]. New York : Open Source Matters, 2007 [cit. 2011-05-26]. Dostupné z WWW: \textless\url{http://joomlacode.org/gf/project/jcode/}\textgreater.
 
 \bibitem{easyeclipse} nextB. \emph{EasyEclipse 1.3} [online]. Fairfax (Virginia) : Geeknet, 2011 [cit. 2011-05-26]. Dostupné z WWW: \textless\url{http://www.easyeclipse.org/site/home/index.html}\textgreater.
+
+\bibitem{joomla-extensiondev} Joomla.org. \emph{Setting up your workstation for extension development} [online]. New York : Open Source Matters, 2011 [cit. 2011-05-28]. Dostupné z WWW: \textless\url{http://docs.joomla.org/Setting_up_your_workstation_for_extension_development}\textgreater.
 
 \bibitem{pdtpackagedetails} The Eclipse Foundation. \emph{Eclipse for PHP Developers (Package details)} [online]. Ottawa (Ontario, Canada) : Eclipse Foundation, Inc, 2010 [cit. 2011-06-02]. Dostupné z WWW: \textless\url{http://www.eclipse.org/downloads/packages/eclipse-php-developers/heliossr2}\textgreater.
 
