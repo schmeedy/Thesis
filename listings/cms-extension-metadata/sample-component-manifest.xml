@@ -7,7 +7,7 @@
   <license>License Info with link</license>
   <version>1.0.1</version>
   <description>Description of the component ...</description>
-   <installfile>install.helloworld.php</installfile>
+  <installfile>install.helloworld.php</installfile>
   <uninstallfile>uninstall.helloworld.php</uninstallfile>
   <install>
     <sql>

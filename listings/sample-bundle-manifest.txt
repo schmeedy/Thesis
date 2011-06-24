@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Sample Bundle
+Bundle-SymbolicName: org.example.bundle
+Bundle-Version: 1.0.0
+Bundle-Activator: org.example.bundle.Activator
+Export-Package: org.example.bundle.package;version="1.0.0"
+Import-Package: org.example.utility.package;version="[1.4.0, 2.0.0)"
+Require-Bundle: org.example.otherbundle;version="[1.2.1, 2.0.0)"

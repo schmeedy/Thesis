@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0"
+   activate="activate" deactivate="deactivate" name="server-mngr">
+   
+   <implementation class="core.server.impl.JoomlaServerManagerImpl"/>
+   
+   <service>
+      <provide interface="core.server.IJoomlaServerManager"/>
+   </service>
+   
+   <reference interface="core.server.IJoomlaDeployer"
+      bind="setDeployer" unbind="unsetDeployer" 
+      cardinality="1..1" policy="static" name="IJoomlaDeployer"/>
+</scr:component>
