@@ -11,6 +11,7 @@
 \usepackage{pgfplots}         % plots
 \usepackage{listings}         % code listings
 \usepackage{eurosym}          % symbol of the now-infamous currency
+\usepackage{fancyvrb}         % verbatim in footnotes
 \usepackage[top=3.6cm,bottom=3.5cm,inner=3.5cm,outer=2.6cm]{geometry} %custom page layout
 \usepackage[bookmarks=true,unicode]{hyperref}
 
@@ -52,6 +53,9 @@
 	numbers=left,
 	showstringspaces=false
 }
+
+% allow usage of \verb in footnotes
+\VerbatimFootnotes
 
 \begin{document}
 \pagenumbering{roman}
@@ -431,6 +435,26 @@ Vıpis \ref{lst:osgi-ds-server-manager} obsahuje mírnì upravenou konfiguraci jedn
 
 Declarative Services sledují aktivace bundlù obsahujících konfigurace komponent. Pokud jsou k dispozici všechny sluby, na nich daná komponenta závisí, jsou reference na tyto sluby vloeny do komponenty a ta je následnì aktivována \footnote{Komponenty nabízející OSGi sluby mohou bıt také instancovány a aktivovány a v momentì, kdy nìkdo tuto slubu zaène pouívat. Registraci v registru slueb mohou Declarative Services provést i kdy sluba ještì nebyla instancována pouze na základì uspokojení jejích závislostí.}. Registraci OSGi slueb nabízenıch komponentou provádí za bundle Declarative Services, stejnì jako jejich odregistrování v pøípadì, e závislosti komponenty ji dále nelze uspokojit.
 
+\subsection{Body rozšíøení}
+Jak ji bylo zmínìno, jedním z hlavních pøedpokladù úspìchu v pøípadì modulárního systému je slabá vazba mezi jednotlivımi moduly. Jednou z moností realizace této vazby jsou OSGi sluby. Ty je moné vyuít zejména jako API jednotlivıch modulù (bundlù). Nejsou ale pøíliš vhodné k rozšiøování grafického uivatelského rozhraní. K tomuto úèelu je na platformì Eclipse RCP vyuíván systém bodù rozšíøení (extension points). Rùzné aspekty tohoto systému si vysvìtlíme na jednoduchém pøíkladì.
+
+Øeknìme e chceme pøidat novou poloku do menu Eclipse IDE. Z funkèního hlediska je nejdùleitìjší èástí poloky menu kód, kterı se spustí po jejím vybrání. Pro uivatele je ale zøejmì zásadní její prezentace v menu, tedy popisek a pøípadnì ikona. Zatímco obsluha vıbìru poloky musí bıt v naprosté vìtšinì pøípadù provádìna programovì, k jejímu vykreslení staèí pouze deklarativní popis. Obsluhující tøídu tak potøebujeme a v momentì, kdy uivatel na danou poloku v menu klikne, co umoòuje oddálit její inicializaci a do doby prvního pouití.
+
+Eclipse plugin\footnote{Všechny zásuvné moduly Eclipse jsou OSGi bundly. V Eclipse komunitì se ale zpravidla nazıvají \uv{plugins}.} starající se o vykreslování a správu poloek menu obsahuje definici bodu rozšíøení pro pøidávání novıch poloek. Definice má formu XML schématu rozšíøeného o další metadata vyadovaná vizuálním editorem pro rozšíøení. Pluginy je chtìjí pøidat poloku do menu tak uèiní vloením odpovídající XML struktury do plugin manifestu\footnote{Plugin manifest je XML soubor obsaenı v koøenovém adresáøi pluginu se standardním názvem \verb|plugin.xml|. Nejedná se tedy o JAR manifest -- ten se nachází na standardní cestì \verb|META-INF/MANIFEST.MF|. Kadı Eclipse plugin musí mít JAR manifest s OSGi metadaty, protoe kadı plugin je OSGi bundlem. Plugin manifest mají jen pluginy deklarující body rozšíøení nebo pøispívající do bodù rozšíøení. Pùvodnì slouil plugin manifest i pro definici závislostí mezi pluginy. Tato jeho role ovšem skonèila s pøechodem na OSGi ve verzi Eclipse 3.0.}. V našem ilustraèním pøíkladì by schéma vyadovalo uvést minimálnì název poloky, kvalifikovanı název tøídy pro obsluhu vıbìru poloky a volitelnì cestu k ikonì. V praxi je schéma podobného bodu rozšíøení komplexnìjší -- je napøíklad potøeba identifikovat menu, do kterého chceme poloku pøidat (kromì hlavního menu existují rùzná kontextová menu a podobnì), a její pozici v menu. Dále je potøeba kontrolovat, zda je poloka viditelná a aktivní. Pro tento úèel je moné deklarativnì definovat rùzné vırazy, které jsou pak pøi zobrazení menu vyhodnocovány. Vše proto, aby se oddálila inicializace pluginù a do doby, kdy jsou poprvé vyuity.
+
+Shròme si zpùsob fungování bodù rozšíøení. Plugin nabízející bod rozšíøení musí definovat jeho schéma. Za bìhu pak mùe pomocí speciálního API (extension registry) procházet pøíspìvky ostatních pluginù do tohoto bodu rozšíøení (extension contributions). Extension registry pro zjištìní jednotlivıch pøíspìvkù musí z kadého pluginu naèíst pouze jeden konfiguraèní soubor (plugin manifest). Pøitom bere v úvahu všechny pluginy ve stavu \verb|resolved| -- tj. i dosud neaktivní pluginy, které ještì neprošly inicializací. Plugin deklarující bod rozšíøení pak podle informací obsaenıch v jednotlivıch pøíspìvcích napø. vykreslí poloku v menu, zobrazí nové view, nebo provede nìjakou jinou akci. Instancování pøípadnıch tøíd vyadovanıch bodem rozšíøení by pøitom mìl maximálnì oddálit.
+
+\subsection{Eclipse Modeling Framework}
+Datovı model je centrálním bodem mnoha aplikací. V Eclipse IDE najdeme velké mnoství rùznıch datovıch modelù. Vzhledem k modulárnosti Eclipse èasto nejsou tyto modely vzájemnì propojené. Na rozdíl od podnikovıch aplikací toti Eclipse nemá nìjaké centrální uloištì dat typu relaèní databáze. I kdy nìkolik málo projektù mùe relaèní databázi vyuívat\footnote{Napøíklad DLTK vyuívá relaèní databáze HSQLDB k ukládání indexù skriptù.}, vìtšina pluginù si svá data ukládá ve formì souborù obsahujících XML, serializované Java objekty nebo textová data v nìjakém proprietálním formátu. Reprezentace dat v pamìti je u jednotlivıch datovıch modelù také do znaèné míry odlišná. Tato rùznorodost samozøejmì vedla ke znaèné duplikaci, kdy bìné operace s modelem, které by mohli bıt implementovány genericky a fungovat s libovolnım konkrétním modelem, jsou implementovány pro kadı model zvláš a pokadé jinak. To mimo jiné klade dodateènou zátì na vıvojáøe, kterı se pøi pøechodu k novému projektu musí seznamovat s jeho specifickou implementací datového modelu.
+
+Tento problém se kromì jiného snaí øešit Eclipse Modeling Framework (EMF). EMF se snaí o pøeklenutí svìta SW modelování (soustøedìného kolem Object Management Group a jejích standardù, pøedevším UML) a svìta èistého programování. Vıvojáøi EMF ho nazıvají \uv{pragmatickım pøístupem k modelování}. V jádru EMF stojí Ecore -- meta model slouící k popisu datovıch modelù. Ecore model si v zásadì mùeme pøedstavit jako UML class diagram bez nìkterıch vlastností které se nedají pøímo namapovat na koncepty Javy (napø. asociace musí bıt striktnì binární, protoe asociace s vyšší aritou se nedá v Javì pøímo vyjádøit). V tìsném svázání modelu s implementací se právì projevuje pragmatickı pøístup EMF oproti UML. Pøes urèité odlišnosti je Ecore model UML class diagramu velmi podobnı a s urèitou ztrátou informací je moné z jednoho vygenerovat druhı a naopak. UML však není jediná reprezentace datového modelu, která mùe slouit jako zdroj pro Ecore model nebo mùe bıt z Ecore modelu vytvoøena. Další takovou reprezentací je XML schéma a poslední ale zøejmì nejdùleitìjší jsou tøídy a rozhraní v Javì.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics{resource/ecore-uml-xsd-java.pdf}	
+	\caption{Ecore spojuje Javu, XML a UML. Pøevzato z: \citep[][p. 31]{emf-bible}} \label{fig:osgi-bundle-lifecycle}
+\end{figure}
+
 \cleardoublepage
 \chapter*{Závìr} \addcontentsline{toc}{chapter}{Závìr}
 TODO: nìco na závìr... 
@@ -482,6 +506,8 @@ TODO: nìco na závìr...
 \bibitem{osgi-spec-core} OSGi Alliance. \emph{OSGi Service Platform : Core Specification}. Release 4, Version 4.3. San Ramon (California) : OSGi Alliance, 2011. 352 s.
 
 \bibitem{osgi-spec-compendium} OSGi Alliance. \emph{OSGi Service Platform : Service Compendium}. Release 4, Version 4.2. San Ramon (California) : OSGi Alliance, 2009. 850 s.
+
+\bibitem{emf-bible} STEINBERG, Dave, et al. \emph{EMF: Eclipse Modeling Framework}. Second Edition. Boston (Massachussets) : Addison-Wesley Professional, 2008. 744 s. ISBN 978-0-321-33188-5.
 
 \end{thebibliography}
 
