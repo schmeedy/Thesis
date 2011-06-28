@@ -1,5 +1,6 @@
 \documentclass[11pt,twoside,a4paper]{book}
 \usepackage{czech}
+\usepackage{afterpage}
 \usepackage[latin2]{inputenc}
 \usepackage{graphics}
 \usepackage{array}
@@ -299,9 +300,9 @@ Základem pro vıvoje rozšíøení PHP CMS v open source IDE (zamìøíme se na Eclipse 
 \noindent Nìkolik dalších projektù zamìøenıch na podporu CMS Joomla v Eclipse IDE skonèilo ve fázi plánování bez jakéhokoli publikovaného kódu nebo binární distribuce. V souèasnosti tak není dostupné rozšíøení tohoto typu, které by bylo moné nainstalovat do aktuálních verzí Eclipse s podporou pro PHP zaloenou na PDT. Pøitom se zdá, e poptávka po podobném typu nástroje je pomìrnì slušná -- napø. alfa verzi J!Code si i bez specifické podpory pro systém Joomla! stáhlo více ne 8\,000 lidí \citep[viz][]{jcode}.
 
 \chapter{Návrh metodiky vıvoje rozšíøení CMS Joomla v Eclipse IDE}
-Vıvoj software\footnote{Zde je myšleno pouze samotnı vıvoj (programování) software, nikoliv fáze analızy a návrhu, které jsou souèástí vıvoje SW v širším slova smyslu.} je iterativní proces, ve kterém se neustále støídá realizace zmìn v kódu a jejich následné testování (a u v prostøedí samotné vyvíjené aplikace, nebo napø. uvnitø jednotkového testu), ze kterého èasto vzejdou poadavky na další zmìny. Nazıvejme tento cyklus, bìnì oznaèovanı jako \uv{Development Workflow}, metodikou vıvoje. Bez kvalitní metodiky nemùe bıt proces vıvoje efektivní. 
+Vıvoj software\footnote{Zde je myšleno pouze samotnı vıvoj (programování) software, nikoliv fáze analızy a návrhu, které jsou souèástí vıvoje SW v širším slova smyslu.} je iterativní proces, ve kterém se neustále støídají úpravy kódu a jejich následné testování (a u v prostøedí samotné vyvíjené aplikace, nebo napø. uvnitø jednotkového testu), ze kterého èasto vzejdou poadavky na další zmìny. Nazıvejme kombinaci postupù a nástrojù pouívanıch pøi realizaci tohoto cyklu, metodikou vıvoje (development workflow). Bez kvalitní metodiky nemùe bıt proces vıvoje efektivní. 
 
-Jak však mùeme hodnotit kvalitu metodiky vıvoje SW a jaké jsou její znaky? Dále uvádím nìkolik pøíkladù vlastností, které by dle mého názoru optimální metodika mìla mít:
+Jak však mùeme hodnotit kvalitu metodiky vıvoje SW a jaké jsou její znaky? Dále uvádím nìkolik pøíkladù vlastností, které by dle mého názoru optimální metodika mìla naplòovat:
 \begin{itemize}
 	\item jednotlivec nebo tım je s metodikou identifikován, nemá problémy s vyuíváním nástrojù èi postupù a ve vìtšinì pøípadù tak dokáe èinit efektivnì,
 	\item jednotlivé nástroje jsou vyuívány zpùsobem, ke kterému byly navreny,
@@ -309,7 +310,7 @@ Jak však mùeme hodnotit kvalitu metodiky vıvoje SW a jaké jsou její znaky? Dále
 	\item všechny nástroje a postupy jsou vzájemnì kompatibilní, nepøekrıvají se a nenechávají mezi sebou velké mnoství \uv{hluchého prostoru}.
 \end{itemize}
 
-\noindent Optimální metodika je samozøejmì teoretická konstrukce. Pøi praktickém vıvoji bìnì dochází k ohıbání nástrojù daleko za hranice pøedstavivosti jejich autorù, na nekompatibilitu narazíme i mezi jednotlivımi èástmi IDE a s rostoucí komplexností aplikace dochází ke zvyšování poètu servisních úkonù, nebo nárùstu jejich rušivıch vlivù\footnote{Vrátíme-li se k pøíkladu Javové aplikace, pak s nárùstem její komplexnosti typicky dochází také k nárùstu èasu potøebného k jejímu restartování.}. V praxi je tedy metodika vıvoje vısledkem mnoha kompromisù. Klíè k efektivní práci pak leí ve schopnosti správnì se rozhodnout, kde ustoupit a kde naopak nepovolit.
+\noindent Optimální metodika je samozøejmì teoretická konstrukce. Pøi praktickém vıvoji bìnì dochází k ohıbání nástrojù daleko za hranice pøedstavivosti jejich autorù, na nekompatibilitu narazíme i mezi jednotlivımi èástmi IDE a s rostoucí komplexností aplikace dochází ke zvyšování poètu servisních úkonù, nebo nárùstu jejich rušivıch vlivù\footnote{Vrátíme-li se k pøíkladu Javové aplikace, pak s nárùstem její komplexnosti typicky dochází také k nárùstu èasu potøebného k jejímu restartování.}. V praxi je tedy metodika vıvoje vısledkem mnoha kompromisù. Klíè k efektivní práci pak leí ve schopnosti volby tìch správnıch kompromisù
 
 IDE nejsou pøíliš flexibilními nástroji -- ba právì naopak. Monosti jejich uivatelského pøizpùsobení pro práci, pro kterou nebyly navreny, jsou vìtšinou minimální. Na druhou stranu však umoòují øadu standardních úloh øešit velmi efektivnì. Umoòují toti vtìlit metodiku do nástroje. Je-li tato vtìlená metodika pro danı úkol vhodná a zároveò je-li v IDE vhodnım zpùsobem integrována, pøináší koncovım uivatelùm velké úspory èasu, kterı by jinak museli trávit vymıšlením správnıch postupù a konfigurací flexibilnìjších nástrojù.
 
@@ -370,9 +371,40 @@ Pøi registraci Joomly je dùleitım aspektem její verze. Rùzné verze mohou vyado
 \subsubsection{Zaloení nového projektu}
 Pøed rozebráním samotného zaloení projektu je potøeba si poloit jednu otázku -- chceme jít cestou jednoho rozšíøení na jeden projekt, nebo umoníme správu více rozšíøení v rámci jednoho projektu? Obojí je technicky proveditelné, ale otázka je, která cesta je ta správná. Argumentem pro více rozšíøení na jeden projekt by mohlo bıt, e kvùli existenci více specializovanıch typù funkèních rozšíøení (komponenty, pluginy a moduly) je potøeba pro dodání komplexní jednotky funkènosti vytvoøit hned nìkolik rozšíøení, které spolu funkènì blízce souvisí -- mohli bychom tedy chtít tyto související rozšíøení sjednotit v rámci jednoho projektu. Další vıhodou tohoto rozloení projektu je funkènost content completion napøíè všemi obsaenımi rozšíøeními bez další konfigurace. Na druhé stranì argumentem pro jediné rozšíøení na jeden projekt je nezávislost ivotního cyklu jednotlivıch rozšíøení\footnote{Kadé rozšíøení má svùj samostatnı instalaèní balíèek. Od verze Joomla 1.6 je podporovanı i speciální instalaèní balíèek obsahující více klasickıch instalaèních balíèkù a speciální manifest. Tento \uv{multibalíèek} usnadòuje instalaci komplexních rozšíøení administrátorùm. Vıvojáø však dále bude vnímat jednotlivá rozšíøení oddìlenì.} a fakt, e hranice mezi jednotlivımi rozšíøeními jsou silnìjší ne hranice mezi jednotlivımi soubory. Hranice rùznıch projektù by tak mohly bıt ádoucí. Na základì uvedenıch argumentù jsem se nebyl schopen jednoznaènì rozhodnout pro jednu cestu. Proto jsem prozatím zvolil vnitøní podporu pro více rozšíøení na jeden projekt s tím, e systém prozatím vdy vede vıvojáøe k jednomu rozšíøení na jeden projekt. Obì cesty tak zùstávají otevøené a koneènı vıbìr jedné z variant mùe zohlednit praktické zkušenosti a poadavky budoucích uivatelù.
 
-Koneènì se dostáváme k zaloení nového projektu (je bude na základì vıše øeèeného obsahovat právì jedno rozšíøení). Zaloit novı projekt mùeme chtít buï pro zcela nové rozšíøení, nebo pro další vıvoj ji existujícího rozšíøení. V prvním pøípadì budeme v Eclipse IDE hledat vhodného prùvodce pro vytvoøení nového projektu (new project wizard). Ve standardní distribuci Eclipse pro PHP vıvojáøe bychom zøejmì zvolili prùvodce pro zaloení PHP projektu, kterı je nejblíe charakteru námi zakládaného projektu. V tomto prùvodci mùeme nastavit jméno zakládaného projektu, verzi PHP serveru, knihovny na Build Path a podobnì. Prùvodce pro vytvoøení nového projektu pro rozšíøení Joomla CMS by se místo toho mìl primárnì zamìøit na základní údaje o daném rozšíøení -- jeho název, typ a ostatní základní metadata. Na základì tìchto údajù potom mùe doporuèit název projektu, kterı bude moci vıvojáø upravit. Dalším krokem by mìl bıt vıbìr primárního Joomla serveru, proti kterému chceme vyvíjet. Nabídka serverù by mìla obsahovat všechny servery z konfigurace, na které je dané rozšíøení moné nainstalovat. Po ukonèení prùvodce by ve workspace mìl vzniknout projekt obsahující základní manifest rozšíøení, pøípadnì další povinné soubory podle typu rozšíøení. Na Build Path projektu by mìly bıt automaticky pøidány soubory definující API vybraného Joomla serveru, aby byla zajištìna funkènost content completion.
+Koneènì se dostáváme k zaloení nového projektu (je bude na základì vıše øeèeného obsahovat právì jedno rozšíøení). Zaloit novı projekt mùeme chtít buï pro zcela nové rozšíøení, nebo pro další vıvoj ji existujícího rozšíøení. V prvním pøípadì budeme v Eclipse IDE hledat vhodného prùvodce pro vytvoøení nového projektu (new project wizard). Ve standardní distribuci Eclipse pro PHP vıvojáøe bychom zøejmì zvolili prùvodce pro zaloení PHP projektu, kterı je nejblíe charakteru námi zakládaného projektu. V tomto prùvodci mùeme nastavit jméno zakládaného projektu, verzi PHP serveru, knihovny na Build Path a podobnì. 
+
+Prùvodce pro vytvoøení nového projektu pro rozšíøení Joomla CMS by se místo toho mìl primárnì zamìøit na základní údaje o daném rozšíøení -- jeho název, typ a ostatní základní metadata. Na základì tìchto údajù potom mùe doporuèit název projektu, kterı bude moci vıvojáø upravit. Dalším krokem by mìl bıt vıbìr primárního Joomla serveru, proti kterému chceme vyvíjet. Nabídka serverù by mìla obsahovat všechny servery z konfigurace, na které je dané rozšíøení moné nainstalovat. Po ukonèení prùvodce by ve workspace mìl vzniknout projekt obsahující základní manifest rozšíøení, pøípadnì další povinné soubory podle typu rozšíøení. Na Build Path projektu by mìly bıt automaticky pøidány soubory definující API vybraného Joomla serveru, aby byla zajištìna funkènost content completion.
 
 Pokud chceme v IDE zkusit vyvíjet existující rozšíøení, mùeme bıt v jedné ze dvou situací -- buï máme ji ve VCS k dispozici zkonfigurovanı projekt od jednoho z našich spolupracovníkù. V tom pøípadì staèí provést checkout daného projektu (pøípadnì clone v pøípadì DVCS). Pokud ádnı zkonfigurovanı projekt nemáme, nebo byl projekt vytvoøen jako obecnı PHP projekt a my chceme vyuít vıhod specifické podpory pro Joomlu, máme velmi pravdìpodobnì k dispozici alespoò instalaèní balíèek rozšíøení. IDE by pak mìlo nabízet prùvodce pro vytvoøení projektu z instalaèního balíèku. Jeliko se prakticky jedná o import instalaèního balíèku do workspace, spadá danı prùvodce mezi prùvodce importem (import wizards). Kromì standardních instalaèních balíèkù by mìl import wizard podporovat i \uv{multibalíèky} zavedené v Joomle 1.6.
+
+\subsubsection{Instalace a iterativní vıvoj}
+Pravdìpodobnì hlavní pøidanou hodnotou navrhované podpory Joomly v Eclipse IDE je synchronizace souborù mezi projektem a nainstalovanım rozšíøením umoòující oddìlení rozšíøení od CMS pøi zachování produktivity práce. Pro její zajištìní musí IDE vìdìt, která rozšíøení jsou nainstalovaná na kterıch serverech, aby pøi zmìnì souborù v projektu zkopírovalo jejich nové verze do odpovídajících umístìní. Bude-li instalace rozšíøení na Joomla server moná pøímo z IDE, pak instalace a registrace nainstalovaného rozšíøení v IDE splıvá v jednu uivatelskou akci, provádìnou navíc pøímo ve vıvojovém prostøedí. V opaèném pøípadì by byl vıvojáø nucen opustit IDE, nainstalovat rozšíøení skrze webové administraèní rozhraní a následnì ještì zaregistrovat nainstalované rozšíøení v IDE. To samé platí pro odinstalaci / zrušení registrace v IDE. Podpora instalace a odinstalace rozšíøení z IDE je tak velmi uiteènou vlastností zjednodušující vıvojáøovo workflow.
+
+Pøi jednotlivıch vıvojovıch iteracích, pøi kterıch se støídá úprava souborù rozšíøení s jejím otestováním na testovacím prostøedí, je pak vıvojáø zodpovìdnı pouze za prùbìné úpravu XML manifestu rozšíøení v pøípadì pøidání novıch souborù. Právì na základì tohoto manifestu je toti provádìna synchronizace mezi projektovımi soubory a soubory v CMS.
+
+\subsubsection{Vytvoøení instalaèního balíèku}
+Pøi uvolnìní nové verze rozšíøení je potøeba vytvoøit instalaèní balíèek rozšíøení, kterı bude následnì distribuován koncovım uivatelùm. Jeliko struktura projektu kopíruje strukturu tohoto instalaèního balíèku, je moné ho vytvoøit jednoduchım zabalením souborù v projektu do archivu. Alternativnì by IDE mohlo nabízet prùvodce pro vytvoøení instalaèního balíèku. Ten by spadal do kategorie prùvodcù exportem (export wizards). Prùvodce by byl vhodnı zejména pro vytvoøení \uv{multibalíèkù} obsahujících více rùznıch rozšíøení. Metadata u tohoto typu instalaèního balíèku jdou toti vytvoøit z obsaenıch rozšíøení a není tedy nutné obtìovat vıvojáøe s jejich manuální údrbou -- staèí zjistit, která rozšíøení si v balíèku pøeje zahrnout.
+
+\subsection{Návrh dalších vylepšení}
+Kromì nástrojù umoòujících realizaci základního workflow je moné implementovat další funkcionalitu dále usnadòující práci vıvojáøe rozšíøení Joomla CMS. Uveïme nìkolik pøíkladù takovıch vylepšení, z nich nìkteré nebudou v rámci této práce implementovány\footnote{Hlavním cílem této práce je vıvoj nástrojù umoòující realizaci navreného základního workflow.}, ale mohou ukazovat smìr dalšího vıvoje.
+
+\subsubsection{Editor XML manifestu rozšíøení}
+Základní úpravy manifestu lze provádìt pomocí standardního XML  editoru dostupného v Eclipse. Ten umoòuje automatické doplòování názvù elementù nebo atributù a validaci na základì XML gramatiky (XML schéma nebo DTD). Pro nìkteré typy rozšíøení je k dipozici DTD gramatika\footnote{V dobì psaní tohoto textu nebyly DTD soubory na stránkách Joomly dostupné. Mám však k dispozici DTD pro verzi 1.5 z døívìjší doby.} \citep{mastering-joomla}. Pro rozšíøení ve verzi 1.6 se mi bohuel nepodaøilo nalézt ádnı formální popis XML manifestu.
+
+Manifesty existujících rozšíøení se bohuel uvedenım DTD èasto neøídí -- dokonce i ilustraèní pøíklad manifestu pro komponentu uvedenı na stránkách Joomly \citep{sample-component-manifest} obsahuje elementy, které nejsou definované v DTD (releaseDate a releaseType). Kvùli nízké expresivitì DTD navíc musíme v praxi pøi popisu modelu obsahu volit mezi jedním vıskytem kadého elementu s pøesnì definovanım poøadí a nebo volnım poøadím elementù ale s více povolenımi vıskyty kadého z nich. V pøípadì DTD pro Joomlu je pro základní metadata zvolen první pøístup a všechny elementy musí tedy bıt uvedeny pøesnì v poøadí specifikovaném v DTD. Na funkènost pøi instalaci rozšíøení pøitom poøadí nemá vliv. Validace manifestu podle oficiálních DTD by tedy byla zøejmì zbyteènì pøísná. Pro úèely validace bìhem vıvoje a podpory napovídání pøi editaci manifestu by tak bylo vhodné originální DTD mírnì upravit, pøípadnì vypracovat popis manifestu v alternativním jazyce (napø. XML schéma). Upravené DTD lze následnì pøibalit do zásuvného modulu pro Eclipse a zaregistrovat jej v interním katalogu. Tak je moné vynutit jeho pouití namísto originálního DTD pøi validaci manifestu.
+
+Velké zefektivnìní práce mùe hlavnì pro ménì zkušené vıvojáøe pøinést strukturovanı editor manifestu, kterı by nahradil pøímou editaci XML sadou formuláøù podle typu rozšíøení. Ve editoru tohoto typu je mono zvıšit interaktivitu editace (napø. soubory rozšíøení by nebylo nutné vypisovat, ale pouze vybrat z nabídky sestavené podle souborového stromu projektu). Zároveò jsou jasnì dané poloky, které mùe uivatel upravovat a v neposlední øadì je vısledná XML serializace pøímo pod kontrolou programu a tedy mùe snadno odpovídat DTD (napø. v poadavku na pøesné poøadí elementù). Implementace strukturovaného editoru je však znaènì komplikovaná uvedenou vágností kolem XML gramatiky manifestù.
+
+\subsubsection{Anotace synchronizovanıch souborù}
+Všechny soubory èi sloky tvoøící rozšíøení musí bıt referencovány z manifestu, aby je Joomla instalátor bral v úvahu. Zároveò je tato informace z manifestu dùleitá pro synchronizaci mezi projektem a nainstalovanım rozšíøením. Proto je dùleité, aby vıvojáø udroval tyto seznamy souborù a sloek aktuální. Porovnávání informací z manifestu se stromem projektu je pøitom pomìrnì neobratné a náchylné k pøehlédnutí pøípadnıch pøeklepù. Pro usnadnìní orientace by tak IDE mìlo zobrazovat anotaci u souborù, které jsou na základì informací z manifestu synchronizovány se stavem na serveru. Tato anotace mùe mít buï podobu doplòkového textu u popisku souboru nebo malé ikony pøidané k ikonì typu souboru èi sloky.
+
+\subsubsection{Šablony projektù}
+Základní prùvodce vytvoøením nového projektu pro Joomla rozšíøení vytvoøí víceménì prázdnı projekt s manifestem obsahujícím pouze základní metainformace. Monım vylepšením tohoto prùvodce je pøidání nìkolika šablon rùznıch projektù tak, aby vzniklé rozšíøení ji plnilo urèitou omezenou funkcionalitu. Zejména pro ménì zkušené vıvojáøe je dobré zaèínat od funkèního rozšíøení vyuívajícího nìkteré základní funkce dané platformy, které mohou dále upravovat.
+
+\subsubsection{Podpora pro tvorbu referencí mezi soubory}
+PHP má omezené monosti automatického naèítání kódu. V mnoha pøípadech je tak nutné pøed zavoláním nìkteré funkce nebo pouitím urèité tøídy explicitnì naèíst soubor s její definicí. Odkázat na tento soubor se mùeme nuï relativní cestou, nebo absolutní cestou èasto vycházející z aktuálního umístìní souboru obsahujícího právì bìící kód (tato informace je dostupná v globální konstantì). Pouití relativních cest mùe bıt problematické i v rámci jednoho rozšíøení, protoe jednotlivé soubory jsou podle jejich typu na rùznıch místech souborového stromu CMS. Nemùeme se tak spoléhat na relativní cesty v rámci instalaèního balíèku. Naètení souboru z jiného rozšíøení je pak ještì sloitìjší.
+
+Místo relativních cest by se tak v Joomle k naèítání souborù z jinıch umístìní mìlo vyuívat absolutních cest zkonstruovanıch pomocí konstant, je jsou souèástí bìhového prostøedí (k jejich inicializaci dochází na zaèátku obsluhy poadavku). Úspìšné sestavení takové cesty však pøedpokládá znalost adresáøového stromu Joomla a uvedenıch konstant. IDE by v tomto pøípadì mohlo tyto cesty vytvoøit automaticky. Intuitivnì pouitelná implementace této funkcionality by mohla fungovat následovnì: máme otevøenı editor se skriptem na místì, odkud chceme naèíst jinı skript. V navigátoru najdeme soubor obsahující danı skript a pøetáhneme jej do editoru. IDE na daném místì vloí kód k naètení daného souboru.
 
 \chapter{Implementace}
 \section{Platforma Eclipse}
@@ -482,7 +514,7 @@ Tento problém se kromì jiného snaí øešit Eclipse Modeling Framework (EMF). EMF 
 
 \begin{figure}[h]
 	\centering
-	\includegraphics{resource/ecore-uml-xsd-java.pdf}	
+	\includegraphics{resource/ecore-uml-xsd-java.pdf}
 	\caption{Ecore spojuje Javu, XML a UML. Pøevzato z: \citep[][p. 31]{emf-bible}} \label{fig:ecore-uml-xsd-java}
 \end{figure}
 
@@ -567,5 +599,116 @@ TODO: nìco na závìr...
 \bibitem{indigo-release-networkworld} Network World, Inc. \emph{Eclipse's annual software release train arrives}. Framingham (Massachussets) : Network World, Inc., June 22, 2011 [cit. 2011-06-23]. Dostupné z WWW: \textless\url{http://www.networkworld.com/news/2011/062211-eclipses-annual-software-release-train.html}\textgreater.
 
 \end{thebibliography}
+
+\appendix
+
+\chapter{Joomla! Extension Development in IDE User Guide}
+Welcome to the user guide for Joomla! extension development tooling for Eclipse IDE. Let's start with a warning -- the project is in an early development stage\footnote{In fact I haven't really decided on a name for this project yet...but when Joomla Extension Development is involved, it's certainly tempting to add some random word starting with an ``I'', isn't it? May the force be with you...} with most features needing some additional polish and -- above all -- testing. Because I do not do a whole lot of Joomla! development of my own (and by ``not a whole lot'' I mean none), I'll need your feedback to make it work reliably. So if you're interested in this project, please provide feedback! That said, if you stick with this user guide, most things should at least partially work under normal circumstances.
+
+\section{Installation instructions} 
+The target version of Eclipse is 3.6 (Helios release). It might work with newer versions, provided you have the reight update site's configured so that the update manage might get necessary dependencies. If you've ever installed any Eclipse extension, it's pretty much the same process with this one. Of course there will be those who did not gone through this before and thus we'll describe it very quickly. What you've got (probably from github project page -- \url{https://github.com/schmeedy/Joomla-Eclipse}\footnote{Notice there's not any Star Wars reference in the project name on github...see how things evolve?}) is a packed p2 repository (perhaps more commonly known as an ``Eclipse update site''). In order to use it, go to \emph{Help} -- \emph{Install New Software...}, click the \emph{Add...} button and then the \emph{Archive...} button. A file dialog pops out in which you navigate to the above mentioned repository / update site and select it. Also, be sure to enter some descriptive name for future reference. You can find a screenshot of this further below (figures will be a little bit out of context in PDF version of this guide, so look ahead if you feel you need visual help).
+
+\begin{figure}[h]
+	\centering
+	\resizebox{\textwidth}{!}{\includegraphics{resource/userguide/install-01.png}}
+	\caption{Installation -- registering a p2 repository / update site}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\resizebox{\textwidth}{!}{\includegraphics{resource/userguide/install-02.png}}
+	\caption{Installation -- feature to install}
+\end{figure}
+
+After confirming the dialog, you should the single feature containing everything you need. So select that and continue through the installation wizard, occasionally agreeing to some license terms and the like. There's actually quite a few things that could go wrong during installation -- the most probable causes of problems would be unsupported Eclipse version (lower than 3.6) or disabled / missing update sites with 3rd-party dependencies. Those dependencies are all Eclipse projects, however, and as such should be pre-registered if you have a correct Eclipse distro (I recommend Eclipse 3.6.2 for PHP developers). Even if it ultimately succeeds, the installation process may take considerable amount of time and may even appear to be stuck for a moment when it's trying to collect metadata from all enabled update sites. Be patient and only give up when it actually tells you it failed. A restart is required after successful installation in order to reflect changes.
+
+If everything went smoothly so far, we can explore what's been installed. Let's start with the \emph{Joomla! Servers} view. You can open it by selecting \emph{Window} -- \emph{Show View} -- \emph{Other...} and then choosing \emph{Joomla!} -- \emph{Joomla! Servers}. Alternatively, right-click on the PHP perspective button in the upper-right corner of the workbench window and select \emph{Reset} from the contextual menu -- the view should then appear in the  bottom part of the workbench next to the \emph{Console} view. The view is currently empty (and thus not really worth a screen shot).
+
+\begin{figure}[h]
+	\centering
+	\resizebox{\textwidth}{!}{\includegraphics{resource/userguide/new-server-01.png}}
+	\caption{Joomla! Servers preference page}
+\end{figure}
+
+\section{Defining new Joomla! Server}
+To define a new ``Joomla! Server'', we have to go all the way to the preferences\footnote{Location of servers is stored in preferences, but there should definitely be a shortcut for defining new server directly in the view...as I said -- there's some polishing needed.}. So open \emph{Window} -- \emph{Preferences} and select the \emph{PHP} -- \emph{Joomla Servers!} preference page. We want to add a new server definition, so click the \emph{New} button. A new dialog pops out -- there's a screenshot of it a little bit further ahead with controls requiring you're attention highlited. The most prominent control is the one containing path to the Joomla! root folder. If you do not have joomla installed locally, you should get one as otherwise we're not going to get any further. Once you select some directory, the IDE will validate it's joomla root directory (according to directory structure) and will try to find out it's version. You will be given a chance to specify the major version manually should the autodetection fail horribly. Only Joomla! 1.5 and 1.6 is supported at the moment.
+
+\begin{figure}[h]
+	\centering
+	\resizebox{0.85\textwidth}{!}{\includegraphics{resource/userguide/new-server-02.png}}
+	\caption{New Joomla! Server Dialog}
+\end{figure}
+
+The next piece of information you should provide is the root URL for this Joomla! (you are responsible to configure Apache or different server to serve Joomla! from this URL) and credentials for the admin user. Why do we need to know this? Because your IDE now should be able to install and uninstall Joomla! extensions! To do that, it kind-of emulates what you'd have done in the web interface for admins. Advantage of this approach is that it does not require any changes to your CMS installation and should work out-of-the box provided you haven't changed the basic admin part of your Joomla! in any game-changing way. There's quite a few disadvantages to this approach as well -- one of them being we cannot reliably say whether the installation ultimately failed or not and what was the reason. Server name is just a label for you to identify this server and Team ID is a complicated to explain feature of marginal importance, that should really only be explained in a footnote\footnote{Team is used to identify the server instance in project metadata. Every extension project has a Build Path container containing Joomla! API files based on one of the defined servers. The server used for this purpose is by default picked automatically from the list of defined servers. If you're however not satisfied with this automatic selection, you can force the IDE to select specific server of your liking for any project. This selection is stored in project's metadata, which should normally be shared in your version control system and thus common for all team members working on the project. So you see there's a need to identify a server within team, which is exactly what Team ID is used for. It might not give much sense to you now, but trust me, it's better than identifying servers with their names (labels) in project metadata as the WST project for Java does...that is pure nonsense.}. With the highleted controls filled with accurate information, we can proceed to create some Joomla! extension projects.
+
+\section{Importing Joomla! extension distribution}
+There are two possible scenarios for you to take this tooling for a spin. First -- the recommended one -- is taking an existing extension distribution (either the classic one-extension archive or Joomla 1.6 installation package) and import it as a project in the workspace. If you have a Joomla! extension of your own or you want to test, this is the way to go (note that only ZIP packaging is supported at the moment). Otherwise skip to the following section.
+
+\begin{figure}[h]
+	\centering
+	\resizebox{\textwidth}{!}{\includegraphics{resource/userguide/import-extension-01.png}}
+	\caption{Import Joomla! Extension Wizard}
+\end{figure}
+
+To import an existing extension, go to \emph{File} -- \emph{Import} and choose \emph{PHP} -- \emph{Joomla! Extension}. The first page of the import wizard is dead simple -- just a single input requiring a path to the installation package. It's not really worth screen-shotting, so let's proceed to the second page. If the IDE was able to detect extensions in the provided package, they will be listed in the table. I choosed an installation package for GCalendar for Joomla! 1.6.  Check which extensions do you want to import (if there's only one extension in the package, it should be pre-checked) and alternatively change the suggested name of the project -- it's editable in-place. Click \emph{Finish} when you're satisfied.
+
+A few moments later, you should have a new project(s) in the workspace. A few notable things about extension projects. One minor feature is the ``universal joomla icon'' associated with extension manifests. Other more substantial feature is the Joomla! API container (found under \emph{PHP Include Path}) that contains Joomla! library files from the server you've defined earlier. These files are indexed by PDT (DLTK) and are thus candidates for content assist. Another - rather cosmetic - features visible in the \emph{PHP Explorer} view are special overlay icons for Joomla! extension projects (to make them distinguishable from normal PHP projects) and for all files or folders enlisted under \emph{files}, \emph{media} and \emph{language} sections of the manifest. This is a visual guide to help you realise what you've forgot to enlist in the manifest as it's accuracy is...well, vital for further operation of IDE. So try to keep the manifest file up to date as you add new files to the extension. 
+
+\begin{figure}[h]
+	\centering
+	\resizebox{0.5\textwidth}{!}{\includegraphics{resource/userguide/php-explorer-01.png}}
+	\caption{Special icons for extension manifests and container with Joomla API}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\resizebox{0.21\textwidth}{!}{\includegraphics{resource/userguide/php-explorer-02.png}}
+	\caption{Special overlay icons for projects and enlisted files}
+\end{figure}
+
+\section{Creating new Joomla! extension project}
+To create a new Joomla! extension project, select \emph{File} -- \emph{New} -- \emph{Other...} (or just press CTRL+N which is much faster) and choose the \emph{PHP} -- \emph{Joomla! Extension Project}. Next, you have to specify the version of Joomla! you're targeting and the type of extension (I'll go with plugin in this demo). Other values you're asked to enter correspond with the king of extension you're building and I'll not go through all of them as you probably already know what they mean. One page further in the wizard you can customize name of the project and choose the way the Joomla API container should be bound to a specific server (you can keep the default settings now). After finishing a wizard a new minimalistic project is created in the workspace. We have covered some notable features of the project in the ``import existing extension'' section of the manual. These won't be repeated here even though they apply the same on imported projects as they do on new projects.
+
+\begin{figure}[h]
+	\centering
+	\resizebox{0.7\textwidth}{!}{\includegraphics{resource/userguide/new-project-01.png}}
+	\caption{New Joomla! Extension Project Wizard -- extension metadata}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\resizebox{0.7\textwidth}{!}{\includegraphics{resource/userguide/new-project-02.png}}
+	\caption{New Joomla! Extension Project Wizard -- project settings}
+\end{figure}
+
+\section{Installing an extension on the server}
+With an extension project in the workspace, you'll get to the point where you want to test it. To do that, you must install it on your Joomla! server. To to this, right click your server in the \emph{Joomla! Servers} view and select \emph{Add or remove extensions}. The IDE will first check that the server is accessible through the provided URL and that it can log into the administration using the provided admin credentials. If it fails, you should either start your HTTP server or update server's configuration in the preferences. When it succeeds, you'll see a split-screen dialog with extensions available in your workspace on the left side and already installed extensions on the right side\footnote{There's a known issue that happens irregularly (pretty much every time I'm not trying to debug it) that causes the available extensions tree to come up empty (showing just the projects, but not the extensions within them even though they are not already installed). Workaround for this issue is simple -- close the dialog and try again.}.
+
+\afterpage{\clearpage} % force all accumulated floats on the next page - see http://mintaka.sdsu.edu/GF/bibliog/latex/floats.html
+
+\begin{figure}[h]
+	\centering
+	\resizebox{\textwidth}{!}{\includegraphics{resource/userguide/install-extension-01.png}}
+	\caption{Add or remove extensions -- extension selection}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\resizebox{\textwidth}{!}{\includegraphics{resource/userguide/install-extension-02.png}}
+	\caption{Add or remove extensions -- extension selection}
+\end{figure}
+
+Usage of the \emph{Add or remove extension} dialog is simple. You request an installation of the extension by moving it from left to right, by moving it in the oposite direction you're requesting to uninstall it\footnote{IDE is using the ``install from directory'' functionality in Joomla. In order for this to work, HTTP server running Joomla! instance must have access to the files in your workspace. Future versions may use different approach.}. Changes you've requsted will be performed when pressing the \emph{Next} button. The following screen is a summary of the installation / uninstallation results. I've already mentioned the poor diagnostic options the IDE has when using web interfaces designed for humans. To make troubleshooting easier the message Joomla! showed in the end of the installation / uninstallation process is presented to you in the report. Common cause of failure is trying to install an already installed extension, which triggers joomla error message that another extension is already using target directory. The extension is kept in the installed state from IDE perspective regardless of possible Joomla error messages, which is technically what you want in case of the ``extension already installed error'', but may not be appropriate for other type of failures.
+
+\section{Testing your changes}
+You're maybe thinking ``Great, so I'll have to re-install an extension whenever I'd want to test my changes''. Well, of course not -- that would be terribly slow, taking away all of the joy of developing in a scripting language. The IDE should take care of synchronization of files between your project and the installed extension in Joomla's directory tree. Basically every time you update a file with an arrow-like overlay icon I've shown you before (or file within a folder with the same overlay icon), the current version of it will be automatically copied over to all Joomla! servers with this extension installed. Only three thinks are required for this to work:
+
+\begin{description}
+	\item[Accurate extension manifest] which I've already asked you to maintain...
+	\item[File change visible to Eclipse] which is every file change done with internal Eclipse editors. When using external editors to change files within project, make sure you refresh the project afterwards to make the changes you've made visible to Eclipse.
+	\item[100 \% accurate implementation in the IDE] which might be a bit of a painpoint in the beggining until we iron it out. I was reverse engineering the way Joomla! installer decides which file goes where and I might have overlooked some cornercases or I simply might have screwed up. Current version of the tooling thus cannot be fully relied on, but with help of humble testers, we shall get the much needed reliability in the near future.
+\end{description}
+
+\noindent That's about it. Extension exporter to create installation packages is not yet done, but it's definitely something on the roadmap if the basic workflow delivered by this tooling is appealing to you. It's something I'd expect from a first-class Joomla! support in the IDE, but it does not necessary be in line with your development process you've put together over time. Anyway -- thanks for reading this through and possibly for testing to tooling. I'll be looking forward to getting some feedback from you!
 
 \end{document}
