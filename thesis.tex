@@ -595,9 +595,29 @@ Samotná instalace a odinstalace vyuívá knihovny HttpClient z Apache Commons ke 
 	\item Joomla pouívá bezpeènostní token spjatı s uivatelovou session. Tento token je souèástí všech administraèních formuláøù ve formì skrytého pole (zøejmì pro zvıšení bezpeènosti je token uloen v názvu skrytého pole, jeho hodnota je vdy 1). IDE je tak k simulaci odeslání formuláøe nuceno nejdøíve získat HTML dokument s danım formuláøem, extrahovat z nìj hodnotu bezpeènostního tokenu a a poté mùe vytvoøit vlastní POST poadavek simulující odeslání vyplnìného formuláøe.
 \end{itemize}
 
+\subsection{Synchronizace souborù mezi projektem a CMS}
+Synchronizaci je nutné provádìt pøi kadé zmìnì souborù tvoøících rozšíøení. Nejlepší monosti reakce na zmìny ve workspace má v Eclipse tzv. project builder (extension point \verb|org.eclipse.core.resources.builders|). Ten je volán pøi kadé zmìnì souborù v projektu a má k dispozici souhrnnou informaci o probìhlıch zmìnách (tzv. resource delta). Builder zajišující synchronizaci nejprve pomocí \verb|IProjectManager|u získá model projektu. Z toho zjistí, zda je zmìnìnı soubor souèástí nìkterého rozšíøení. Pokud ano, pouije deployment model získanı ze sluby \verb|IJoomlaDeployer| k urèení serverù, na kterıch je dané rozšíøení nainstalováno. Pomocí deployment modelu pak urèí umístìní souboru na daném serveru (metoda \verb|DeploymentRuntime.getDestination(ExtensionResource)|) a novou verzi souboru do nìj zkopíruje.
+
 \subsection{Joomla API build path kontejner}
+Pro správnou funkci systému content assist musí bıt PHP skripty obsahující Joomla API zaindexovány a spojeny s projektem ve workspace. V DLTK k tomuto propojení slouí tzv. build path. Jednotlivé záznamy na build path mohou mít nìkolik rùznıch forem, z nich nejdùleitìjší vyuitelné pro pøipojení souborù mimo workspace jsou:
+\begin{description}
+	\item[Externí adresáø] DLTK pak bude indexovat všechny skripty obsaené v tomto adresáøi a jeho podadresáøích. Nevıhodou tohoto záznamu je pøímá vazba na konkrétní lokální cestu. Záznamy na build path jsou toti bìnì sdíleny v systému pro správu verzí a lokální cesta na poèítaèi jednoho vıvojáøe velmi èasto nebude u ostatních èlenù tımu platná.
+	
+	\item[Externí archiv] Velmi podobné jako externí adresáø. DLTK bude indexovat všechny skripty obsaené v archivu. Naráíme na stejnı problém s lokální cestou.
+
+	\item[Build path kontejner] V tomto pøípadì je na build path uloen jen abstraktní identifikátor druhu kontejneru (a pøípadnì jeho konfigurace). Tento identifikátor je pak svázán s implementací rozhraní \verb|IBuildpathContainer|, která pro danı projekt mùe vrátit jeden èi více konkrétních build path záznamù (do této kategorie spadají pøedcházející typy záznamù). Jasnou vıhodou kontejneru je jedna podoba záznamu platná pro všechny èleny tımu. Nevıhodou pak je, e nemùe bıt uivatelsky definován, nebo vyaduje programovou implementaci.
+\end{description}
+
+\noindent Pro pøipojení Joomla API byl samozøejmì zvolen build path kontejner. Ten ve vıchozím nastavení sám zvolí z dostupnıch serverù jeden vhodnı pro danı projekt (vıbìr deleguje na \verb|IJoomlaServerManager.getDefaultServer(JoomlaExtensionProject)|). Je také moné oznaèit jeden ze serverù jako preferovanı pro danı projekt -- v tom pøípadì se k záznamu na build path pøipojí jeho Team ID (viz pøílohu \ref{attachment:userguide}).
+
+PDT vedle build path zavádí další koncept -- tzv. include path. Pøi spuštìní libovolného PHP skriptu v projektu pøímo z IDE jsou záznamy na iclude path prohledávány v momentì, kdy se danı skript pokusí naèíst jinı skript pomocí \verb|include| nebo \verb|require|. Vıznam include path je ve spojení s rozšíøeními Joomly pomìrnì nízkı, nebo skripty tvoøící rozšíøení zpravidla stejnì vyadují specifické prostøedí inicializované Joomlou na zaèátku obsluhy poadavku a tak zpravidla ani nejdou pøímo spustit. Pro Joomla API kontejner by tak bylo pøirozené, aby byl souèástí build path, ale nikoli include path. Taková implementace umoòuje normální fungování content assist, ale bohuel neumoòuje zobrazení kontejneru v PHP Explorer view ani úpravu kontejneru v nastavení projektu. PDT toti mìní standardní UI pro build path v DLTK a efektivnì nahrazuje build path svou include path. Øešením je zahrnutí kontejneru zároveò build path i na include path, do které ovšem logicky nepatøí.
 
 \subsection{Importér instalaèních balíèkù}
+Pro podporu importu rozšíøení z instalaèních balíèkù byla vytvoøena OSGi sluba definovaná rozhraním \verb|IJoomlaExtensionPackageImporter| (vıpis \ref{lst:extension-package-importer}). Ta umoòuje importovat jak instalaèní balíèky jednotlivıch rozšíøení, tak \uv{multibalíèek} uvedenı s ve verzi 1.6. Samotnı import probíhá ve dvou fázích. V první z nich jsou v instalaèním balíèku vyhledány manifesty rozšíøení (k jejich identifikaci se pouívá komponenta slouící i k identifikaci manifestù ve workspace). Ve druhé fázi dochází k nakopírování vybranıch souborù z instalaèního balíèku do workspace.
+
+\lstinputlisting[language=Java, caption={Rozhraní IJoomlaExtensionPackageImporter}, label=lst:extension-package-importer]{listings/services/IJoomlaExtensionPackageImporter.java}
+
+Joomla podporuje u instalaèních balíèkù rozšíøení nìkolik rùznıch druhù archivù. Importér v souèasnosti podporuje pouze archivy typu zip. Práce s archivy ale probíhá pøes abstraktní mini-rozhraní a tak by pøidání dalších typù archivù mìlo bıt pomìrnì snadné.
 
 \cleardoublepage
 \chapter*{Závìr} \addcontentsline{toc}{chapter}{Závìr}
