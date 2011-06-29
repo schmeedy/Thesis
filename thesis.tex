@@ -77,6 +77,26 @@
 \end{center}
 \end{titlepage}
 
+\chapter*{Abstrakt}
+Cílem této práce je zlepšení procesu vývoje rozšíøení open source systémù pro správu obsahu, se zvláštním zamìøením na funkèní rozšíøení CMS Joomla.
+
+Práce zaèíná analýzou souèasného trhu open source CMS systémù, z které vyplývá, že vìtšinì trhu je dominována systémy implementovanými v programovacím jazyce PHP. Proto následuje analýza standardních nástrojù používaných pøi vývoji v PHP. Ta ukazuje, že k vývoji aplikací v PHP jsou stále èasto využívány relativnì jednoduché textové editory namísto integrovaných vývojových prostøedí. Dále je ukázáno, že moderní open source IDE mohou zvýšit produktivitu práce i pøi vývoji ve skriptovacím jazyce.
+
+V další èásti práce jsou zkoumána specifika vývoje rozšíøení CMS systémù. Pøitom jsou prezentovány tøi nejrozšíøenìjší open source CMS (WordPress, Drupal a Joomla) se zamìøením na možnosti jejich funkèní rozšiøitelnost. Je demonstrováno, že urèité specifické vlastnosti modulárního systému CMS Joomla pøedstavují pøekážku pro efektivní využití IDE v procesu vývoje. Následnì jsou prozkoumány dva doporuèené postupy práce pøi vývoji funkèních rozšíøení pro CMS Joomla a jsou demonstrovány jejich nevýhody. Na základì této analýzy je navržena nová metodika vývoje zahrnující návrh dosud nevyvinutých funkèních rozšíøení Eclipse IDE øešící zmínìné nevýhody.
+
+Následuje popis platformy Eclipse se zamìøením na klíèové technologie využité pøi~implementaci tìchto funkèních rozšíøení. Poslední èástí je popis hlavních komponent implementace.
+
+\chapter*{Abstract}
+This thesis seeks to improve the development process of open source content management system extensions with particular focus on functional extensions of Joomla CMS.
+
+It starts by analyzing current open source CMS market to conclude that most of it is dominated by systems implemented in the PHP programming language. Standard tools used throughout the PHP development process are then analyzed to show that fully-featured integrated development environments are not used as often as with compiled languages. It's shown, however, that modern open source IDEs can deliver performance gains even when used for development in a scripting language. 
+
+The focus is then shifted from general purpose PHP development to the specifics of CMS extension development. Three major open source systems (WordPress, Drupal and Joomla) are presented with focus on their extensibility. It's demonstrated that some features of Joomla's module system, which are not present in the other systems in comparison, are making it much harder to establish an efficient development workflow that would take full advantage of an IDE.
+Two recommended workflows for Joomla extension development are then presented while pointing out their disadvantages. Based on this analysis, a new development workflow is designed incorporating yet-to-be-developed functional extensions of Eclipse IDE to solve the problems.
+
+The Eclipse platform is then described, pointing out some key technologies used to implement these functional extensions. Finally, major components of the implementation are described.
+
+
 \tableofcontents 
 
 \cleardoublepage
@@ -623,7 +643,11 @@ Joomla podporuje u instalaèních balíèkù rozšíøení nìkolik rùzných druhù archivù.
 
 \cleardoublepage
 \chapter*{Závìr} \addcontentsline{toc}{chapter}{Závìr}
-TODO: nìco na závìr... 
+Open source CMS v dnešní dobì pohání velkou èást svìtového webu. Jejich úspìch je pøitom z velké èásti dán množstvím volnì dostupných i komerèních rozšíøení, jejichž funkcionalita v souhrnu dalece pøekraèuje funkcionalitu samotného jádra CMS. Produktivita práce pøi vývoji tìchto rozšíøení tedy mùže být jedním z faktorù úspìchu CMS.
+
+Tato práce poukázala na nìkteré výhody využití integrovaných vývojových prostøedí (IDE) i v pøípadì vývoje ve skriptovacím jazyce PHP, ve kterém je napsána vìtšina nejrozšíøenìjších open source CMS. Na druhou stranu bylo zjištìno nìkolik problémù komplikujících efektivní využití IDE pro vývoj rozšíøení CMS Joomla. Tyto problémy byly øešeny návrhem nové metodiky vývoje tìchto rozšíøení. Návrh poèítal s vytvoøením specifických rozšíøení Eclipse IDE pro podporu daného typu vývoje.
+
+Koneèným výsledkem této práce je prototypová implementace funkèních rozšíøení \mbox{Eclipse} IDE umožòujících efektivní aplikaci navržené metodiky. Tyto rozšíøení budou v blízké dobì dány k dispozici open source komunitì soustøedìné kolem CMS Joomla. Definitivní zhodnocení úspìšnosti práce bude možné provést až na základì zpìtné vazby od prvních uživatelù.
 
 \begin{thebibliography}{99}
 
