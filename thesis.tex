@@ -581,6 +581,19 @@ Serverové konfigurace mají opìt podobu EMF modelu. Jeho diagram naleznete na obr
 Rozhraní \verb|IJoomlaServerManager| je velmi jednoduché. Kromì vıbìru vhodného serveru pro dané rozšíøení umoòuje pouze naèíst nebo uloit seznam Joomla serverù. Protoe se jedná o uivatelská nastavení, je tento seznam ukládán v rámci tzv. preferece store. Mùe tak bıt spolu s ostatními nastaveními exportován do souboru a pozdìji importován do jiné instance Eclipse IDE. Preference store umí manipulovat pouze s páry klíè-hodnota. Protoe server manager potøebuje ukládat EMF model, je tento model v rámci øetìzcové hodnoty serializován do XMI.
 
 \subsection{Instalace a odinstalace rozšíøení}
+Instalaci rozšíøení na Joomla server a jeho následnou odinstalaci zajišuje OSGi sluba definovaná rozhraním \verb|IJoomlaDeployer| (vıpis \ref{lst:joomla-deployer}). Ta dále nabízí pøístup ke sdílené persistentní instanci deployment modelu (instance tøídy \verb|DeploymentDescriptor|).
+
+\lstinputlisting[language=Java, caption={Rozhraní IJoomlaDeployer}, label=lst:joomla-deployer]{listings/services/IJoomlaDeployer.java}
+
+Samotná instalace a odinstalace vyuívá knihovny HttpClient z Apache Commons ke komunikaci s Joomlou pomocí standardního webového rozhraní. Toto rozhraní je samozøejmì navrené pro komunikaci s lidmi a nikoli externími aplikacemi. Jeho vyuití k tomuto úèelu je tak nutnì sloité a málo robustní. Joomla však v základní distribuci neobsahuje ádné rozhraní pro komunikaci s externí aplikací schopné instalace nového rozšíøení a tak zùstává standardní webové rozhraní prakticky jedinou moností nevyadující od koncovıch uivatelù instalaci speciálních rozšíøení Joomla CMS pøed pouitím IDE. Nìkolik poznámek k implementaci:
+
+\begin{itemize}
+	\item Komunikace probíhá pomocí GET / POST HTTP poadavkù, které IDE zasílá na specifická URL Joomla serveru. Odpovìdí na tyto poadavky je HTML dokument, ze kterého je vìtšinou potøeba extrahovat urèitou informaci. Proto je tento HTML dokument nejdøíve pomocí knihovny HtmlCleaner\footnote{http://htmlcleaner.sourceforge.net/} pøeveden na ekvivalentní XML reprezentaci umoòující vyhodnocování XPath vırazù. Pro sestavení XPath vırazù jsou vyuívány zejména ID atributy, které Joomla pøiøazuje nìkterım vıznamnım elementùm, aby tak byl omezen vliv moné zmìny struktury dokumentù.
+	
+	\item Pro pøístup do administraèního rozhraní Joomly je potøeba se nejdøíve pøihlásit. Souèástí poadované konfigurace Joomla serveru jsou proto pøihlašovací údaje k úètu s administraèními právy. Pro odstínìní zbytku aplikace od procesu pøihlašování byla vytvoøena abstrakce autentifikované session s Joomla serverem (rozhraní \verb|IJoomlaHttpSession| a jeho implementace). Ta se pouívá pro zasílání všech HTTP poadavkù nesouvisejících s pøihlašováním. Pokud Joomla na poadavek odpoví vrácením pøihlašovací stránky, pokusí se session o pøihlášení a v pøípadì úspìchu pak znovu odešle pùvodní poadavek. Klient \verb|IJoomlaHttpSession| tak vdy formuluje poadavky tak, jako by ji administrátor byl pøihlášenı.
+	
+	\item Joomla pouívá bezpeènostní token spjatı s uivatelovou session. Tento token je souèástí všech administraèních formuláøù ve formì skrytého pole (zøejmì pro zvıšení bezpeènosti je token uloen v názvu skrytého pole, jeho hodnota je vdy 1). IDE je tak k simulaci odeslání formuláøe nuceno nejdøíve získat HTML dokument s danım formuláøem, extrahovat z nìj hodnotu bezpeènostního tokenu a a poté mùe vytvoøit vlastní POST poadavek simulující odeslání vyplnìného formuláøe.
+\end{itemize}
 
 \subsection{Joomla API build path kontejner}
 
