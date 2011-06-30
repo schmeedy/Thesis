@@ -59,23 +59,80 @@
 % allow usage of \verb in footnotes
 \VerbatimFootnotes
 
+\newcommand{\dotrule}[1]{\parbox[t]{#1}{\dotfill}}
+
 \begin{document}
 \pagenumbering{roman}
 
 \begin{titlepage}
 \begin{center}
-\vspace*{\stretch{2}}
-{\Huge\sffamily\bfseries Podpora vývoje rozšíøení PHP CMS}
+%\vspace*{\stretch{2}}
 
+
+%\vspace*{2em}
+{\huge\sffamily\bfseries 
+Vysoká škola ekonomická v Praze
+\vspace*{0.3cm}
+
+Fakulta informatiky a statistiky}
+\vspace*{0.5cm}
+
+{\LARGE\sffamily 
+Katedra informaèního a znalostního inženýrství
+\vspace*{0.2cm}
+
+Obor: Znalostní technologie
+}
+
+\vspace*{\stretch{1}}
+\resizebox{0.37\textwidth}{!}{\includegraphics{resource/vse-logo.png}}
 \vspace*{2em}
-{\Large\sffamily\bfseries Martin Schmied}
 
-\vspace*{\stretch{0.7}}
-\resizebox{0.4\textwidth}{!}{\includegraphics{resource/vse-logo.png}}
+{\LARGE\sffamily\bfseries Diplomová práce}
+\vspace*{1em}
 
-\vspace*{\stretch{3}}
+{\Huge\sffamily\bfseries Podpora vývoje rozšíøení PHP CMS}
 \end{center}
+\vspace*{\stretch{1}}
+
+\noindent
+{\LARGE\sffamily
+\begin{tabular}{m{3.5cm} l}
+Diplomant:     & Martin Schmied \\
+Vedoucí práce: & Ing. Andrej Hazucha
+\end{tabular}
+}
+
+\vspace*{\stretch{2}}
+
+\begin{center}
+	\LARGE\sffamily\bfseries Praha 2011
+\end{center}
+
 \end{titlepage}
+
+\cleardoublepage
+
+\vspace*{\fill}
+\begin{center}
+\LARGE
+\textbf{Prohlášení}
+\end{center}
+
+\noindent Prohlašuji, že jsem vypracoval samostatnì diplomovou práci na téma \emph{Podpora vývoje rozšíøení PHP CMS}. Použitou literaturu a další podkladové materiály uvádím v pøiloženém seznamu literatury.
+\vspace{2em}
+
+\cleardoublepage
+
+\vspace*{\fill}
+\begin{center}
+\LARGE
+\textbf{Podìkování}
+\end{center}
+
+\noindent Rád bych podìkoval vedoucímu své diplomové práce Ing. Andrejovi Hazuchovi za jeho cenné rady a pøipomínky.
+
+\cleardoublepage
 
 \chapter*{Abstrakt}
 Cílem této práce je zlepšení procesu vývoje rozšíøení open source systémù pro správu obsahu, se zvláštním zamìøením na funkèní rozšíøení CMS Joomla.
